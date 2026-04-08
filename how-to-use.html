@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to use · Thai Foundation</title>
+  <style>
+    :root {
+      --bg:         #100f0d;
+      --surface:    #1c1a16;
+      --border:     #3a3020;
+      --accent:     #d97706;
+      --accent-hi:  #f59e0b;
+      --accent-bg:  #1f1700;
+      --accent-bdr: #5a3e00;
+      --text:       #f0e8d8;
+      --text-muted: #8a7a68;
+      --text-dim:   #4a3a28;
+      --green:      #4ade80;
+      --red:        #f87171;
+      --purple:     #a78bfa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 40px 24px 60px;
+    }
+    .top-bar {
+      width: 100%; max-width: 620px; display: flex;
+      align-items: center; justify-content: space-between; margin-bottom: 36px;
+    }
+    .back-btn {
+      font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
+      border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .back-btn:hover { color: var(--text); border-color: #5a4a30; }
+
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 6px; text-align: center; }
+    .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 32px; text-align: center; }
+
+    .section {
+      width: 100%; max-width: 620px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 24px; margin-bottom: 14px;
+    }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .section-emoji { font-size: 1.4rem; }
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .section p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 10px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .hl {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 5px; padding: 1px 7px;
+      font-size: 0.82rem; color: var(--accent-hi); font-weight: 600;
+    }
+
+    .tip {
+      background: var(--accent-bg); border: 1px solid var(--accent-bdr);
+      border-radius: 10px; padding: 12px 16px; margin-top: 10px;
+      font-size: 0.82rem; color: var(--accent-hi); line-height: 1.65;
+    }
+
+    /* Card demo */
+    .card-pair { display: flex; gap: 10px; margin: 14px 0; }
+    .card-demo {
+      flex: 1; background: #fefcf8; border: 5px solid var(--accent);
+      border-radius: 14px; padding: 18px 14px; text-align: center;
+      display: flex; flex-direction: column; gap: 5px; align-items: center;
+    }
+    .demo-cat   { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; font-weight: 700; }
+    .demo-new   { font-size: 0.58rem; font-weight: 700; color: #d97706; background: #fef3c7; border-radius: 3px; padding: 1px 5px; }
+    .demo-word  { font-size: 1.3rem; font-weight: 800; color: #1e293b; }
+    .demo-roman { font-size: 1.2rem; font-weight: 800; color: #1e293b; }
+    .demo-script { font-size: 0.9rem; color: #92400e; }
+    .demo-hint  { font-size: 0.65rem; color: #cbd5e1; }
+    .card-label { font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 4px; }
+
+    /* Dots */
+    .dots-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+    .dots { display: flex; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); }
+    .dot.filled { background: var(--accent); border-color: var(--accent-hi); }
+    .dot-label { font-size: 0.82rem; color: var(--text-muted); }
+
+    /* Buttons demo */
+    .btn-demo {
+      display: inline-block; border-radius: 10px; padding: 7px 14px;
+      font-size: 0.82rem; font-weight: 600; margin: 3px 3px 3px 0;
+    }
+    .btn-green  { background: var(--surface); color: var(--green);  border: 1.5px solid #166534; }
+    .btn-red    { background: var(--surface); color: var(--red);    border: 1.5px solid #7f1d1d; }
+    .btn-amber  { background: linear-gradient(135deg, var(--accent), var(--accent-hi)); color: #0c0a08; border: none; }
+    .btn-gray   { background: var(--surface); color: var(--text-muted); border: 1.5px solid var(--border); }
+
+    /* Keyboard table */
+    kbd {
+      display: inline-block; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 5px; padding: 2px 8px; font-family: monospace;
+      font-size: 0.82rem; color: var(--accent-hi); margin-right: 6px;
+    }
+    .key-table { width: 100%; font-size: 0.85rem; }
+    .key-table tr td { padding: 6px 4px; color: var(--text-muted); border-bottom: 1px solid var(--bg); }
+    .key-table tr:last-child td { border-bottom: none; }
+    .key-table td:first-child { width: 120px; }
+
+    /* Progress demo */
+    .progress-demo { margin: 12px 0; }
+    .progress-label-demo { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px; }
+    .seen-stat     { color: var(--text-muted); font-weight: 700; }
+    .mastered-stat { color: var(--purple);     font-weight: 700; }
+    .progress-bar-demo {
+      height: 5px; background: var(--surface); border-radius: 99px;
+      overflow: hidden; position: relative;
+    }
+    .fill-seen {
+      position: absolute; height: 100%; background: #3a3020;
+      border-radius: 99px; width: 60%;
+    }
+    .fill-mastered {
+      position: absolute; height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hi));
+      border-radius: 99px; width: 20%;
+    }
+
+    .streak-demo {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--accent-bg); border: 1.5px solid var(--accent-bdr);
+      border-radius: 99px; padding: 4px 14px;
+      font-size: 0.85rem; font-weight: 800; color: var(--accent-hi);
+    }
+
+    .made-by { margin-top: 40px; font-size: 0.7rem; color: var(--text-dim); }
+
+    .lang-switcher {
+      display: flex; border: 1.5px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .lang-btn {
+      background: none; border: none; padding: 5px 9px;
+      font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      color: var(--text-muted); transition: all 0.15s;
+    }
+    .lang-btn.active { background: #252118; color: var(--accent-hi); }
+    .lang-btn + .lang-btn { border-left: 1.5px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html" data-i18n="back">← Back</a>
+  <div style="display:flex;gap:6px;align-items:center">
+    <div class="lang-switcher">
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="lang-th" onclick="setLang('th')">ไทย</button>
+    </div>
+    <a class="back-btn" href="phonetics.html" data-i18n="phonetics">Pronunciation guide →</a>
+  </div>
+</div>
+
+<h1 data-i18n="title">🌺 How to use</h1>
+<p class="subtitle" data-i18n="subtitle">Thai Foundation v3 · Complete guide</p>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🧠</div><div class="section-title" data-i18n="s_idea">The idea</div></div>
+  <p>This app helps you learn Thai vocabulary from the <strong>"Thai Foundation Course"</strong> book. It shows you a word or phrase — you try to recall the translation — then reveal the answer and tell the app how you did.</p>
+  <p>The app uses <strong>Spaced Repetition (SRS)</strong>: it tracks every card and brings hard cards back sooner, easy cards back later. Over time you spend time only on what you actually need to practice.</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🔄</div><div class="section-title" data-i18n="s_direction">Direction</div></div>
+  <p><span class="hl">Eng → Thai</span> — See English, recall Thai. Best for beginners.</p>
+  <p><span class="hl">Thai → Eng</span> — See Thai romanisation + script, recall English. Harder and more realistic.</p>
+  <div class="tip">💡 Start with Eng → Thai. Switch to Thai → Eng once you're comfortable with a category.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">⚙️</div><div class="section-title" data-i18n="s_settings">Session settings</div></div>
+  <p><strong>Session size</strong> — how many cards per session:</p>
+  <p><span class="hl">Quick · 10</span> — a fast warm-up, great for daily habit.<br>
+     <span class="hl">Normal · 20</span> — the default, balanced session.<br>
+     <span class="hl">Full</span> — all cards currently due, no limit.</p>
+  <p><strong>New cards per session</strong> — the slider controls how many brand-new (never-seen) cards are introduced each session. Set it low (5) while learning, higher (15–20) to go faster.</p>
+  <div class="tip">💡 New cards mixed into review sessions are the highest-effort cards. If sessions feel overwhelming, lower the new-cards slider.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">📚</div><div class="section-title" data-i18n="s_categories">Categories</div></div>
+  <p>20+ categories from the book — Numbers, Verbs, Greetings, Grammar, Family, Animals, Food & Drinks, and more. Select one or several, then press Start.</p>
+  <p>Each category button shows a <span style="color:#4ade80;font-weight:700">green</span> mastered count and <span style="color:#f87171;font-weight:700">red</span> remaining count on the right.</p>
+  <p>The <span class="hl">🎲 Random</span> button adds 20 cards picked at random from all categories — great for a mixed challenge once you've studied several categories.</p>
+  <div class="tip">💡 Start with 2–3 categories. Add more as you master them.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🃏</div><div class="section-title" data-i18n="s_card">The card</div></div>
+  <div class="card-pair">
+    <div>
+      <div class="card-demo" style="border-color:#10b981">
+        <div class="demo-cat">Verbs</div>
+        <div class="demo-new">New</div>
+        <div class="demo-word">eat</div>
+        <div class="demo-hint">tap to flip</div>
+      </div>
+      <div class="card-label">Front — the question</div>
+    </div>
+    <div>
+      <div class="card-demo" style="border-color:#10b981">
+        <div class="demo-cat">Verbs</div>
+        <div class="demo-roman">gin</div>
+        <div class="demo-script">กิน</div>
+        <div class="demo-hint">tap to flip back</div>
+      </div>
+      <div class="card-label">Back — the solution</div>
+    </div>
+  </div>
+  <p>A <span style="color:#d97706;font-weight:700">New</span> badge appears on cards you've never seen before.</p>
+  <p>The <strong>back</strong> shows the Thai romanisation (large) and Thai script below it. Hover over any script character to see its sound.</p>
+  <p>Tap the card or press <span class="hl">Solution</span> to reveal the answer. Then honestly rate yourself:</p>
+  <p>
+    <span class="btn-demo btn-green">✓ Got it</span> — you knew it. Card advances in SRS.<br>
+    <span class="btn-demo btn-red">✗ Again</span> — you didn't. Card comes back this session (max 3 times).<br>
+    <span class="btn-demo btn-gray">Skip</span> — defer without penalty. Card returns once later in the session.
+  </p>
+  <div class="tip">💡 Be honest. Only press Got it if you remembered before peeking — not after seeing the answer.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">📊</div><div class="section-title" data-i18n="s_progress">Progress bar</div></div>
+  <div class="progress-demo">
+    <div class="progress-label-demo">
+      <span class="seen-stat">Seen 156 / 521</span>
+      <span class="mastered-stat">Mastered 42</span>
+    </div>
+    <div class="progress-bar-demo">
+      <div class="fill-seen"></div>
+      <div class="fill-mastered"></div>
+    </div>
+  </div>
+  <p><strong>Seen</strong> (dark) — cards you've answered at least once correctly. This grows quickly.</p>
+  <p><strong>Mastered</strong> (amber) — cards that have reached the highest SRS box. These are deeply learned.</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🟠</div><div class="section-title" data-i18n="s_srs">Learning dots (SRS boxes)</div></div>
+  <p>Six dots below the card show which SRS box that card is in:</p>
+  <div class="dots-row">
+    <div class="dots"><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <span class="dot-label">Box 1 — new, seen every session</span>
+  </div>
+  <div class="dots-row">
+    <div class="dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <span class="dot-label">Box 3 — good, shown every 4 sessions</span>
+  </div>
+  <div class="dots-row">
+    <div class="dots"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div>
+    <span class="dot-label">Box 6 — mastered, shown every 16 sessions</span>
+  </div>
+  <p>✓ Got it moves the card one box forward. ✗ Again resets it to box 1 (but only re-queues it 3 times per session max).</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">⌨️</div><div class="section-title" data-i18n="s_keyboard">Keyboard shortcuts (desktop)</div></div>
+  <table class="key-table">
+    <tr><td><kbd>Space</kbd></td><td>Reveal solution</td></tr>
+    <tr><td><kbd>→</kbd></td><td>✓ Got it</td></tr>
+    <tr><td><kbd>←</kbd></td><td>✗ Again</td></tr>
+    <tr><td><kbd>S</kbd></td><td>Skip (before reveal)</td></tr>
+    <tr><td><kbd>U</kbd></td><td>Undo last answer</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">↩️</div><div class="section-title" data-i18n="s_undo">Undo</div></div>
+  <p>The <span class="hl">↩ Undo</span> button (top-right of the study screen) reverses your last answer — restoring the card's SRS state and session stats exactly as they were before.</p>
+  <p>Only one level of undo is available. It clears after each new card.</p>
+  <div class="tip">💡 Use undo when you accidentally pressed Got it on a word you didn't actually know, or pressed Again when you knew it fine.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">💤</div><div class="section-title" data-i18n="s_suspend">Suspend a card</div></div>
+  <p>The <span class="hl">💤</span> button (top-left of the study screen) suspends the current card — removing it from all future sessions until you clear it.</p>
+  <p>Use this for cards that are too advanced, irrelevant, or that you want to revisit much later.</p>
+  <p>On the picker screen you'll see how many cards are suspended, with a <strong>clear all</strong> link to restore them.</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🔊</div><div class="section-title" data-i18n="s_audio">Audio</div></div>
+  <p>The 🔊 button reads the word currently visible on the card, in the correct language. It reads English when the English face is showing and Thai when the solution is showing.</p>
+  <p>Audio requires a <strong>Thai voice</strong> installed on your device. If it doesn't work:</p>
+  <p><strong>iPhone / Mac:</strong> Settings → Accessibility → Spoken Content → Voices → Thai → download a voice.<br>
+     <strong>Android:</strong> Settings → General Management → Language → Text-to-Speech → install Thai.</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🇹🇭</div><div class="section-title" data-i18n="s_tooltips">Thai script tooltips</div></div>
+  <p>On the back of every card (and on the front in Thai → Eng mode), hover over any Thai script character to see its approximate phonetic sound.</p>
+  <p>These are single-character approximations — actual pronunciation depends on context and tone. Use them as a guide, not a rule.</p>
+  <p>→ For a full pronunciation guide, see <a href="phonetics.html" style="color:var(--accent-hi)">Pronunciation Guide</a>.</p>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">🔥</div><div class="section-title" data-i18n="s_streak">Streak</div></div>
+  <p>The <span class="streak-demo">🔥 5</span> pill tracks your consecutive daily study days. Even a 10-card Quick session counts.</p>
+  <div class="tip">💡 Consistency beats intensity. 10 minutes every day beats 2 hours once a week.</div>
+</div>
+
+<div class="section">
+  <div class="section-header"><div class="section-emoji">📱</div><div class="section-title" data-i18n="s_install">Install on your phone</div></div>
+  <p><strong>iPhone:</strong> Open in Safari → tap Share → <em>Add to Home Screen</em>.</p>
+  <p><strong>Android:</strong> Open in Chrome → tap menu (⋮) → <em>Add to Home Screen</em>.</p>
+  <p>All progress is saved locally on your device.</p>
+</div>
+
+<div class="made-by">✦ Thai Foundation v3</div>
+
+<script>
+const HTU_STRINGS = {
+  en: {
+    back: '← Back', phonetics: 'Pronunciation guide →',
+    title: '🌺 How to use', subtitle: 'Thai Foundation v3 · Complete guide',
+    s_idea: 'The idea', s_direction: 'Direction', s_settings: 'Session settings',
+    s_categories: 'Categories', s_card: 'The card', s_progress: 'Progress bar',
+    s_srs: 'Learning dots (SRS boxes)', s_keyboard: 'Keyboard shortcuts (desktop)',
+    s_undo: 'Undo', s_suspend: 'Suspend a card', s_audio: 'Audio',
+    s_tooltips: 'Thai script tooltips', s_streak: 'Streak', s_install: 'Install on your phone',
+  },
+  th: {
+    back: '← กลับ', phonetics: 'คู่มือการออกเสียง →',
+    title: '🌺 วิธีใช้', subtitle: 'ไทยพื้นฐาน v3 · คู่มือฉบับสมบูรณ์',
+    s_idea: 'แนวคิด', s_direction: 'ทิศทาง', s_settings: 'การตั้งค่าเซสชัน',
+    s_categories: 'หมวดหมู่', s_card: 'บัตร', s_progress: 'แถบความก้าวหน้า',
+    s_srs: 'จุดการเรียนรู้ (SRS)', s_keyboard: 'ปุ่มลัดบนคีย์บอร์ด',
+    s_undo: 'เลิกทำ', s_suspend: 'ระงับบัตร', s_audio: 'เสียง',
+    s_tooltips: 'คำอธิบายอักษรไทย', s_streak: 'สถิติต่อเนื่อง', s_install: 'ติดตั้งบนโทรศัพท์',
+  },
+};
+
+function setLang(lang) {
+  localStorage.setItem('tf_ui_lang', lang);
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-th').classList.toggle('active', lang === 'th');
+  const s = HTU_STRINGS[lang] || HTU_STRINGS.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (s[key]) el.textContent = s[key];
+  });
+}
+
+// Apply on load
+const _lang = localStorage.getItem('tf_ui_lang') || 'en';
+setLang(_lang);
+</script>
+</body>
+</html>

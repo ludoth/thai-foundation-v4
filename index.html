@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thai Foundation</title>
+  <meta name="theme-color" content="#100f0d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <script src="foundation.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:          #100f0d;
+      --surface:     #1c1a16;
+      --surface-up:  #252118;
+      --border:      #3a3020;
+      --border-hi:   #5a4a30;
+      --accent:      #d97706;
+      --accent-hi:   #f59e0b;
+      --accent-glow: #fbbf24;
+      --accent-bg:   #1f1700;
+      --accent-bdr:  #5a3e00;
+      --text:        #f0e8d8;
+      --text-muted:  #8a7a68;
+      --text-dim:    #4a3a28;
+      --thai:        #d97706;
+      --green:       #4ade80;
+      --green-dim:   #166534;
+      --red:         #f87171;
+      --red-dim:     #7f1d1d;
+      --mastered:    #fbbf24;
+      --purple:      #a78bfa;
+      --purple-dim:  #3730a3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 100%, rgba(217,119,6,0.06) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 90% 5%,  rgba(245,158,11,0.04) 0%, transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; max-width: 520px; margin-bottom: 16px;
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 10px; }
+    h1 { font-size: 1.35rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+
+    .streak-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--accent-bg); border: 1.5px solid var(--accent-bdr);
+      border-radius: 99px; padding: 4px 12px;
+      font-size: 0.8rem; font-weight: 800; color: var(--accent-hi);
+    }
+
+    .top-nav { display: flex; gap: 6px; align-items: center; }
+    .top-link {
+      font-size: 0.78rem; color: var(--text-muted); text-decoration: none;
+      border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px;
+      white-space: nowrap; transition: color 0.15s, border-color 0.15s;
+    }
+    .top-link:hover { color: var(--text); border-color: var(--border-hi); }
+
+    /* Language switcher */
+    .lang-switcher {
+      display: flex; border: 1.5px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .lang-btn {
+      background: none; border: none; padding: 5px 9px;
+      font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      color: var(--text-muted); transition: all 0.15s; line-height: 1;
+    }
+    .lang-btn.active {
+      background: var(--surface-up); color: var(--accent-hi);
+    }
+    .lang-btn:not(.active):hover { color: var(--text); }
+    .lang-btn + .lang-btn { border-left: 1.5px solid var(--border); }
+
+    /* ── Progress ── */
+    .progress-wrap { width: 100%; max-width: 520px; margin-bottom: 18px; }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; font-weight: 700; margin-bottom: 6px;
+    }
+    .seen-stat    { color: var(--text-muted); }
+    .mastered-stat { color: var(--mastered); }
+    .progress-bar {
+      height: 5px; background: var(--surface); border-radius: 99px;
+      overflow: hidden; position: relative;
+    }
+    .progress-fill-seen {
+      position: absolute; height: 100%; background: var(--surface-up);
+      border-radius: 99px; transition: width 0.4s ease;
+    }
+    .progress-fill-mastered {
+      position: absolute; height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+      border-radius: 99px; transition: width 0.4s ease;
+    }
+
+    /* ── Picker ── */
+    #picker-view {
+      width: 100%; max-width: 520px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .picker-label {
+      font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: 0.09em; align-self: flex-start; font-weight: 700;
+    }
+
+    .dir-row, .session-row { display: flex; gap: 8px; width: 100%; }
+    .pill-btn {
+      flex: 1; padding: 9px; border-radius: 10px; font-size: 0.85rem;
+      font-weight: 600; border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text-muted);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .pill-btn.active {
+      border-color: var(--accent); background: var(--accent-bg);
+      color: var(--accent-hi);
+    }
+    .pill-btn:hover:not(.active) {
+      border-color: var(--border-hi); color: var(--text);
+    }
+
+    /* New cards slider — custom styled */
+    .slider-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+    .slider-row input[type=range] {
+      flex: 1; cursor: pointer; height: 4px;
+      -webkit-appearance: none; appearance: none;
+      background: var(--surface-up); border-radius: 99px; outline: none;
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 4px var(--accent-bdr);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 4px var(--accent-bg), 0 0 0 6px var(--accent-bdr);
+    }
+    .slider-row input[type=range]::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); border: none; cursor: pointer;
+    }
+    .slider-val {
+      font-size: 0.85rem; font-weight: 800; color: var(--accent-hi);
+      min-width: 28px; text-align: right;
+    }
+
+    /* Cat grid — 3 columns */
+    .cat-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; width: 100%;
+    }
+    @keyframes cat-enter {
+      from { opacity: 0; transform: translateY(7px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .cat-grid.animate .cat-btn {
+      animation: cat-enter 0.28s ease-out both;
+      animation-delay: calc(var(--i, 0) * 14ms);
+    }
+
+    .cat-btn {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 11px 14px; cursor: pointer;
+      text-align: left; display: flex; flex-direction: row;
+      align-items: center; justify-content: space-between; gap: 10px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .cat-btn:hover { border-color: var(--cat-color, var(--accent)); }
+    .cat-btn.selected {
+      border-color: var(--cat-color, var(--accent));
+      background: color-mix(in srgb, var(--cat-color, var(--accent)) 10%, var(--bg));
+    }
+    .cat-btn-left {
+      display: flex; flex-direction: column; gap: 2px; min-width: 0;
+    }
+    .cat-emoji { font-size: 1rem; }
+    .cat-name {
+      font-size: 0.82rem; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cat-total { font-size: 0.67rem; color: var(--text-muted); }
+    .cat-btn.selected .cat-name  { color: var(--accent-hi); }
+    .cat-btn.selected .cat-total { color: var(--accent); }
+
+    .cat-btn-right {
+      display: flex; flex-direction: column;
+      gap: 3px; flex-shrink: 0; align-items: center;
+    }
+    .cat-pill { font-size: 0.75rem; font-weight: 700; }
+    .cat-pill-green { color: var(--green); }
+    .cat-pill-divider { width: 12px; height: 1px; background: var(--border); }
+    .cat-pill-red { color: var(--red); }
+
+    .picker-row {
+      display: flex; justify-content: space-between;
+      align-items: center; width: 100%;
+    }
+    .select-all {
+      font-size: 0.72rem; color: var(--text-muted); cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 6px; transition: all 0.15s;
+    }
+    .select-all:hover { color: var(--text); border-color: var(--border-hi); }
+    .word-count-note { font-size: 0.78rem; color: var(--text-dim); }
+
+    .suspended-note { font-size: 0.72rem; color: var(--text-muted); text-align: center; }
+    .clear-link {
+      color: var(--accent); cursor: pointer; text-decoration: underline;
+    }
+    .clear-link:hover { color: var(--accent-hi); }
+
+    /* Start button — sticky so it's always above the fold */
+    .btn-start-wrap {
+      position: sticky; bottom: 0; width: 100%;
+      padding: 16px 0 12px;
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+      z-index: 10;
+    }
+    .btn-start-wrap .tooltip {
+      display: none; position: absolute; bottom: calc(100% + 8px);
+      left: 50%; transform: translateX(-50%);
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 0.75rem; padding: 6px 12px;
+      border-radius: 8px; white-space: nowrap; pointer-events: none; z-index: 10;
+    }
+    .btn-start-wrap.disabled:hover .tooltip { display: block; }
+    .btn-start {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hi));
+      color: #0c0a08; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn-start:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-start:not(:disabled):active { transform: scale(0.98); }
+    .btn-start:disabled { opacity: 0.3; cursor: default; }
+
+    /* ── Study view ── */
+    #study-view {
+      width: 100%; display: flex; flex-direction: column; align-items: center;
+    }
+
+    .study-header {
+      width: 100%; max-width: 480px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .study-header-left  { display: flex; align-items: center; gap: 6px; }
+    .study-header-center { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .study-header-right { display: flex; align-items: center; gap: 6px; }
+
+    /* Mode label — high contrast now */
+    .study-header-mode {
+      font-size: 0.68rem; color: var(--accent);
+      font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    }
+    .study-counter { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+
+    .quit-btn {
+      background: none; border: none; color: var(--text-dim);
+      font-size: 1.3rem; cursor: pointer; padding: 4px 6px;
+      transition: color 0.15s;
+    }
+    .quit-btn:hover { color: var(--text-muted); }
+
+    .icon-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text-muted); font-size: 0.85rem;
+      padding: 5px 9px; cursor: pointer; text-decoration: none;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--border-hi); }
+    .icon-btn:disabled { opacity: 0.25; cursor: default; }
+
+    /* Session progress bar */
+    .session-progress-wrap {
+      width: 100%; max-width: 480px; margin-bottom: 10px;
+    }
+    .session-progress-bar {
+      height: 3px; background: var(--surface); border-radius: 99px; overflow: hidden;
+    }
+    .session-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+      border-radius: 99px; transition: width 0.3s ease;
+    }
+
+    /* ── Flip card ── */
+    @keyframes card-enter {
+      from { transform: scale(0.94) translateY(8px); opacity: 0.6; }
+      to   { transform: scale(1) translateY(0);      opacity: 1; }
+    }
+    @keyframes reveal-glow {
+      0%   { box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0  0px 0px rgba(217,119,6,0.5); }
+      40%  { box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px 6px rgba(217,119,6,0.2); }
+      100% { box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0  0px 0px rgba(217,119,6,0); }
+    }
+
+    .card-scene {
+      width: 100%; max-width: 400px;
+      min-height: 260px; height: 300px;
+      perspective: 1200px; cursor: pointer; user-select: none;
+      transition: transform 0.15s;
+    }
+    .card-scene.entering { animation: card-enter 0.28s cubic-bezier(0.34,1.4,0.64,1) forwards; }
+    .card-scene:hover { transform: translateY(-2px); }
+    .card-scene:active { transform: scale(0.99); }
+
+    .flip-card {
+      width: 100%; height: 100%; position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.42s cubic-bezier(0.4,0,0.2,1);
+    }
+    .flip-card.flipped { transform: rotateY(180deg); }
+    .flip-card.just-revealed .flip-back { animation: reveal-glow 0.65s ease-out forwards; }
+
+    .flip-front, .flip-back {
+      position: absolute; width: 100%; height: 100%;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border-radius: 20px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #fefcf8;
+      border: 6px solid var(--cat-color, var(--accent));
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+      padding: 24px; gap: 6px; text-align: center;
+    }
+    .flip-back { transform: rotateY(180deg); }
+
+    .card-category {
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #94a3b8; font-weight: 700; position: absolute; top: 13px;
+    }
+    .card-new-badge {
+      position: absolute; top: 10px; right: 12px;
+      font-size: 0.58rem; font-weight: 700; color: #d97706;
+      background: #fef3c7; border-radius: 4px; padding: 1px 5px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .card-main { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
+    .card-main.thai { color: #92400e; }
+    .card-front-sub { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
+    .card-hint { font-size: 0.7rem; color: #cbd5e1; position: absolute; bottom: 14px; }
+    .thai-roman { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
+    .thai-script { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
+    .card-note-back {
+      font-size: 0.7rem; color: #94a3b8; font-style: italic;
+      border-top: 1px solid #f1f5f9; padding-top: 5px; width: 100%;
+      position: absolute; bottom: 14px;
+    }
+    .no-script-note { font-size: 0.75rem; color: #94a3b8; font-style: italic; }
+
+    /* Thai char tooltips — desktop hover + mobile tap */
+    .th-char { position: relative; cursor: help; display: inline-block; }
+    .th-char:hover::after,
+    .th-char.tip-active::after {
+      content: attr(data-sound);
+      position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      background: var(--surface); color: var(--accent-hi);
+      font-size: 0.65rem; font-weight: 700; padding: 4px 8px;
+      border-radius: 6px; white-space: nowrap;
+      border: 1px solid var(--accent-bdr);
+      pointer-events: none; margin-bottom: 6px; z-index: 20;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    /* SRS dots — larger */
+    .srs-dots { display: flex; gap: 5px; margin-top: 12px; }
+    .srs-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--surface); border: 1.5px solid var(--border);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .srs-dot.filled {
+      background: var(--accent); border-color: var(--accent-hi);
+    }
+
+    /* Speak */
+    .speak-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+    .btn-speak {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 99px; font-size: 1rem; padding: 6px 16px;
+      cursor: pointer; color: var(--text); transition: border-color 0.15s;
+    }
+    .btn-speak:hover { border-color: var(--border-hi); }
+    .btn-speak:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Keyboard hints — hidden on touch devices */
+    kbd {
+      font-size: 0.6rem; background: rgba(255,255,255,0.08);
+      border-radius: 3px; padding: 1px 4px; margin-left: 4px;
+      font-family: monospace; vertical-align: middle;
+    }
+    @media (hover: none) { kbd { display: none; } }
+
+    /* Answer buttons */
+    .btn-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; max-width: 480px; }
+    @keyframes flash-green {
+      0%   { background: var(--surface); }
+      35%  { background: rgba(74,222,128,0.18); }
+      100% { background: var(--surface); }
+    }
+    @keyframes flash-red {
+      0%   { background: var(--surface); }
+      35%  { background: rgba(248,113,113,0.18); }
+      100% { background: var(--surface); }
+    }
+
+    .btn {
+      flex: 1; padding: 14px; border-radius: 12px; font-size: 0.95rem;
+      font-weight: 600; border: none; cursor: pointer; transition: transform 0.1s, background 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-again {
+      background: var(--surface); color: var(--red);
+      border: 1.5px solid var(--red-dim);
+    }
+    .btn-again:hover  { background: #2a1515; }
+    .btn-again.flash  { animation: flash-red   0.35s ease-out forwards; }
+    .btn-got-it {
+      background: var(--surface); color: var(--green);
+      border: 1.5px solid var(--green-dim);
+    }
+    .btn-got-it:hover { background: #0d2a1a; }
+    .btn-got-it.flash { animation: flash-green 0.35s ease-out forwards; }
+    .btn-skip {
+      background: var(--surface); color: var(--text-muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-skip:hover { background: var(--surface-up); }
+    .btn-stop {
+      background: var(--surface); color: var(--text-muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-reveal {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hi));
+      color: #0c0a08; flex: 2; padding: 14px; border-radius: 12px;
+      font-size: 0.95rem; font-weight: 700; border: none; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-reveal:hover { opacity: 0.9; }
+
+    /* Session stats — contained row */
+    .session-stats {
+      display: flex; margin-top: 14px; width: 100%; max-width: 400px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .session-stats > div {
+      flex: 1; padding: 9px 0; text-align: center;
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      border-right: 1px solid var(--border);
+    }
+    .session-stats > div:last-child { border-right: none; }
+    .session-stats span {
+      display: block; font-size: 1.05rem; font-weight: 800;
+      color: var(--text); margin-bottom: 2px; letter-spacing: 0;
+    }
+    .stat-remaining span { color: var(--accent-hi); }
+
+    /* ── Done ── */
+    #session-done {
+      display: none; flex-direction: column; align-items: center;
+      gap: 14px; text-align: center;
+    }
+    #session-done.visible { display: flex; }
+    #session-done h2 { font-size: 1.7rem; }
+    #session-done p { color: var(--text-muted); max-width: 360px; }
+
+    .done-stats {
+      display: flex; gap: 16px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px 24px; margin: 4px 0;
+    }
+    .done-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .done-stat-val {
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--accent-hi);
+    }
+    .done-stat-val.green { color: var(--green); }
+    .done-stat-label {
+      font-size: 0.6rem; color: var(--text-muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .done-divider { width: 1px; background: var(--border); }
+
+    .btn-done-row { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-secondary {
+      padding: 13px 20px; border-radius: 12px; font-size: 0.9rem;
+      font-weight: 600; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--border-hi); }
+    .btn-primary {
+      padding: 13px 20px; border-radius: 12px; font-size: 0.9rem;
+      font-weight: 700; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hi));
+      color: #0c0a08; cursor: pointer;
+    }
+
+    /* Confetti */
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(800deg); opacity: 0; }
+    }
+    .confetti-piece {
+      position: fixed; width: 8px; height: 8px; border-radius: 2px;
+      pointer-events: none; z-index: 999;
+      animation: confetti-fall 1.5s ease-in forwards;
+    }
+    @keyframes done-pop { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+
+    .reset-area {
+      margin-top: 24px; display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+    }
+    .reset-link {
+      font-size: 0.7rem; color: var(--text-dim); cursor: pointer;
+      text-decoration: underline; transition: color 0.15s;
+    }
+    .reset-link:hover { color: var(--text-muted); }
+    .made-by { font-size: 0.68rem; color: var(--text-dim); letter-spacing: 0.05em; }
+
+    /* Divider between sections in picker */
+    .picker-divider {
+      width: 100%; height: 1px; background: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <h1>🇹🇭 <span data-i18n="appTitle">Thai Foundation</span></h1>
+    <div class="streak-pill" id="streak-pill">🔥 0</div>
+  </div>
+  <div class="top-nav">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="lang-en" onclick="setUILang('en')">EN</button>
+      <button class="lang-btn"        id="lang-th" onclick="setUILang('th')">ไทย</button>
+    </div>
+    <a href="phonetics.html" class="top-link" data-i18n="linkPhonetics">Phonetics</a>
+    <a href="how-to-use.html" class="top-link" data-i18n="linkHowTo">How to use</a>
+  </div>
+</div>
+
+<!-- Global progress -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span class="seen-stat"><span data-i18n="statSeen">Seen</span> <span id="stat-seen-global">0</span> / <span id="stat-total-global">0</span></span>
+    <span class="mastered-stat"><span data-i18n="statMastered">Mastered</span> <span id="stat-mastered-global">0</span></span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill-seen"     id="progress-fill-seen"     style="width:0%"></div>
+    <div class="progress-fill-mastered" id="progress-fill-mastered" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- ── PICKER VIEW ── -->
+<div id="picker-view">
+
+  <div class="picker-label" data-i18n="labelDirection">Direction</div>
+  <div class="dir-row">
+    <button class="pill-btn active" id="dir-eng-thai" onclick="setDirection('eng-thai')" data-i18n="dirEngThai">Eng → Thai</button>
+    <button class="pill-btn"        id="dir-thai-eng" onclick="setDirection('thai-eng')" data-i18n="dirThaiEng">Thai → Eng</button>
+  </div>
+
+  <div class="picker-label" data-i18n="labelSessionSize">Session size</div>
+  <div class="session-row">
+    <button class="pill-btn active" id="size-quick" onclick="setSessionSize(20)" data-i18n="sizeQuick">Quick · 20</button>
+    <button class="pill-btn"        id="size-full"  onclick="setSessionSize(0)"  data-i18n="sizeFull">Full</button>
+  </div>
+
+  <div class="picker-label" data-i18n="labelNewCards">New cards per session</div>
+  <div class="slider-row">
+    <input type="range" id="new-cards-slider" min="0" max="20" value="10"
+           oninput="setNewCards(this.value)">
+    <span class="slider-val" id="new-cards-label">10</span>
+  </div>
+
+  <div class="picker-divider"></div>
+
+  <!-- Categories — shown before the Start button -->
+  <div class="picker-label" data-i18n="labelCategories">Categories</div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <div class="picker-row">
+    <div class="word-count-note" id="word-count-note"></div>
+    <div class="select-all" onclick="toggleAll()" data-i18n="selectAll">select all</div>
+  </div>
+
+  <div class="suspended-note" id="suspended-note" style="display:none">
+    <span id="suspended-count">0</span> <span data-i18n="suspended">cards suspended —</span>
+    <span class="clear-link" onclick="clearAllSuspended()" data-i18n="clearAll">clear all</span>
+  </div>
+
+  <!-- Start button — below categories -->
+  <div class="btn-start-wrap disabled" id="btn-start-wrap">
+    <span class="tooltip" data-i18n="tooltipStart">Select at least one category</span>
+    <button class="btn-start" id="btn-start" onclick="startSession()" disabled data-i18n="btnStart">
+      Start studying
+    </button>
+  </div>
+
+</div>
+
+<!-- ── STUDY VIEW ── -->
+<div id="study-view" style="display:none">
+
+  <div class="study-header">
+    <div class="study-header-left">
+      <button class="quit-btn" onclick="showPicker()" title="Home" aria-label="Back to home">🌺</button>
+      <button class="icon-btn" id="btn-suspend" onclick="suspendCard()" title="Suspend card" aria-label="Suspend card">💤</button>
+    </div>
+    <div class="study-header-center">
+      <span class="study-counter"     id="study-counter">1 / 20</span>
+      <span class="study-header-mode" id="study-header-mode">Eng → Thai</span>
+    </div>
+    <div class="study-header-right">
+      <button class="icon-btn" id="btn-undo" onclick="undoLast()" title="Undo last answer (U)" aria-label="Undo last answer" disabled data-i18n="undoBtn">↩ Undo</button>
+      <a href="how-to-use.html" class="icon-btn" title="Help" aria-label="Help">?</a>
+    </div>
+  </div>
+
+  <!-- Session progress bar -->
+  <div class="session-progress-wrap">
+    <div class="session-progress-bar">
+      <div class="session-progress-fill" id="session-progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card-scene" id="card-scene" onclick="toggleFlip()" role="button"
+       tabindex="0" aria-label="Flashcard — tap to flip">
+    <div class="flip-card" id="flip-card">
+      <div class="flip-front">
+        <div class="card-category"  id="card-category"></div>
+        <div class="card-new-badge" id="card-new-badge" style="display:none" data-i18n="newBadge">New</div>
+        <div class="card-main"      id="card-front"></div>
+        <div class="card-front-sub" id="card-front-sub"></div>
+        <div class="card-hint" id="card-hint-front" data-i18n="hintFront">tap to flip</div>
+      </div>
+      <div class="flip-back">
+        <div class="card-category"   id="card-category-back"></div>
+        <div class="thai-roman"      id="thai-roman"></div>
+        <div class="thai-script"     id="thai-script"></div>
+        <div class="card-note-back"  id="card-note-back" style="display:none"></div>
+        <div class="card-hint" data-i18n="hintBack">tap to flip back</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SRS dots -->
+  <div class="srs-dots" id="srs-dots" aria-label="SRS progress"></div>
+
+  <!-- Audio -->
+  <div class="speak-row">
+    <button class="btn-speak" id="btn-speak" onclick="speak()" title="Listen" aria-label="Listen to pronunciation">🔊</button>
+  </div>
+
+  <!-- Reveal row -->
+  <div class="btn-row" id="btn-reveal-row">
+    <button class="btn btn-skip" onclick="skipCard()"><span data-i18n="btnSkip">Skip</span> <kbd>S</kbd></button>
+    <button class="btn-reveal"   onclick="revealCard()"><span data-i18n="btnSolution">Solution</span> <kbd>Space</kbd></button>
+  </div>
+
+  <!-- Answer row -->
+  <div class="btn-row" id="btn-row" style="display:none">
+    <button class="btn btn-again"  onclick="answer(false)"><span data-i18n="btnAgain">✗ Again</span> <kbd>←</kbd></button>
+    <button class="btn btn-got-it" onclick="answer(true)"><span data-i18n="btnGotIt">✓ Got it</span> <kbd>→</kbd></button>
+  </div>
+
+  <!-- Session stats -->
+  <div class="session-stats">
+    <div><span data-i18n="statAnswered">Answered:</span> <span id="stat-session">0</span></div>
+    <div><span data-i18n="statCorrect">Correct:</span> <span id="stat-correct">0</span></div>
+    <div class="stat-remaining"><span data-i18n="statRemaining">Remaining:</span> <span id="stat-deck">0</span></div>
+  </div>
+
+</div>
+
+<!-- ── DONE VIEW ── -->
+<div id="session-done">
+  <div style="font-size:3.5rem;animation:done-pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275)">🎉</div>
+  <h2 data-i18n="sessionDone">Session done!</h2>
+  <p id="done-msg"></p>
+  <div class="done-stats">
+    <div class="done-stat">
+      <span class="done-stat-val"       id="done-correct">0</span>
+      <span class="done-stat-label" data-i18n="doneCorrect">Correct</span>
+    </div>
+    <div class="done-divider"></div>
+    <div class="done-stat">
+      <span class="done-stat-val"       id="done-total">0</span>
+      <span class="done-stat-label" data-i18n="doneAnswered">Answered</span>
+    </div>
+    <div class="done-divider"></div>
+    <div class="done-stat">
+      <span class="done-stat-val green" id="done-seen">0</span>
+      <span class="done-stat-label" data-i18n="doneSeen">Seen</span>
+    </div>
+    <div class="done-divider"></div>
+    <div class="done-stat">
+      <span class="done-stat-val green" id="done-mastered">0</span>
+      <span class="done-stat-label" data-i18n="doneMastered">Mastered</span>
+    </div>
+  </div>
+  <div class="btn-done-row">
+    <button class="btn-secondary" onclick="showPicker()" data-i18n="btnChangeCategories">Change categories</button>
+    <button class="btn-primary"   onclick="startSession()" data-i18n="btnStudyAgain">Study again</button>
+  </div>
+</div>
+
+<div class="reset-area">
+  <div class="reset-link" onclick="resetProgress()" data-i18n="resetLink">reset all progress</div>
+  <div class="made-by">✦ Thai Foundation v3</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  TRANSLATIONS
+// ═══════════════════════════════════════════
+const STRINGS = {
+  en: {
+    appTitle:            'Thai Foundation',
+    labelDirection:      'Direction',
+    dirEngThai:          'Eng → Thai',
+    dirThaiEng:          'Thai → Eng',
+    labelSessionSize:    'Session size',
+    sizeQuick:           'Quick · 20',
+    sizeFull:            'Full',
+    labelNewCards:       'New cards per session',
+    labelCategories:     'Categories',
+    selectAll:           'select all',
+    tooltipStart:        'Select at least one category',
+    btnStart:            'Start studying',
+    linkPhonetics:       'Phonetics',
+    linkHowTo:           'How to use',
+    statSeen:            'Seen',
+    statMastered:        'Mastered',
+    hintFront:           'tap to flip',
+    hintBack:            'tap to flip back',
+    btnSkip:             'Skip',
+    btnSolution:         'Solution',
+    btnAgain:            '✗ Again',
+    btnGotIt:            '✓ Got it',
+    statAnswered:        'Answered:',
+    statCorrect:         'Correct:',
+    statRemaining:       'Remaining:',
+    sessionDone:         'Session done!',
+    doneCorrect:         'Correct',
+    doneAnswered:        'Answered',
+    doneSeen:            'Seen',
+    doneMastered:        'Mastered',
+    btnChangeCategories: 'Change categories',
+    btnStudyAgain:       'Study again',
+    resetLink:           'reset all progress',
+    newBadge:            'New',
+    suspended:           'cards suspended —',
+    clearAll:            'clear all',
+    cardsSuffix:         'cards',
+    fullDeck:            'full deck',
+    undoBtn:             '↩ Undo',
+    modeEngThai:         'Eng → Thai',
+    modeThaiEng:         'Thai → Eng',
+    doneMsg:             (correct, total, pct) => `${correct} of ${total} correct (${pct}%).`,
+    noCards:             'No cards due! All caught up. 🎉 Come back later or pick more categories.',
+    confirmReset:        'Reset ALL progress? This cannot be undone.',
+    catLabels: {
+      numbers: 'Numbers', pronouns: 'Pronouns', verbs: 'Verbs',
+      days: 'Days & Time', greetings: 'Greetings', nouns: 'Nouns',
+      adjectives: 'Adjectives', places: 'Places', patterns: 'Patterns',
+      quantifiers: 'Quantifiers', shopping: 'Shopping', time: 'Time',
+      questions: 'Questions', grammar: 'Grammar', family: 'Family',
+      emotions: 'Emotions', transport: 'Transport', animals: 'Animals',
+      colors: 'Colors', food: 'Food & Drinks', body: 'Body',
+      health: 'Health', home: 'Home', work: 'Work',
+      clothing: 'Clothing', directions: 'Directions', months: 'Months',
+      nature: 'Nature', weather: 'Weather', alphabet: 'Alphabet', random: 'Random',
+    },
+  },
+  th: {
+    appTitle:            'ไทยพื้นฐาน',
+    labelDirection:      'ทิศทาง',
+    dirEngThai:          'อังกฤษ → ไทย',
+    dirThaiEng:          'ไทย → อังกฤษ',
+    labelSessionSize:    'จำนวนบัตร',
+    sizeQuick:           'เร็ว · 20',
+    sizeFull:            'ทั้งหมด',
+    labelNewCards:       'บัตรใหม่ต่อครั้ง',
+    labelCategories:     'หมวดหมู่',
+    selectAll:           'เลือกทั้งหมด',
+    tooltipStart:        'เลือกอย่างน้อยหนึ่งหมวดหมู่',
+    btnStart:            'เริ่มเรียน',
+    linkPhonetics:       'สัทศาสตร์',
+    linkHowTo:           'วิธีใช้',
+    statSeen:            'เห็นแล้ว',
+    statMastered:        'เชี่ยวชาญ',
+    hintFront:           'แตะเพื่อพลิก',
+    hintBack:            'แตะเพื่อพลิกกลับ',
+    btnSkip:             'ข้าม',
+    btnSolution:         'เฉลย',
+    btnAgain:            '✗ อีกครั้ง',
+    btnGotIt:            '✓ จำได้',
+    statAnswered:        'ตอบแล้ว:',
+    statCorrect:         'ถูกต้อง:',
+    statRemaining:       'เหลืออยู่:',
+    sessionDone:         'เสร็จแล้ว!',
+    doneCorrect:         'ถูก',
+    doneAnswered:        'ตอบ',
+    doneSeen:            'เห็น',
+    doneMastered:        'เชี่ยวชาญ',
+    btnChangeCategories: 'เปลี่ยนหมวดหมู่',
+    btnStudyAgain:       'เรียนอีกครั้ง',
+    resetLink:           'รีเซ็ตทั้งหมด',
+    newBadge:            'ใหม่',
+    suspended:           'บัตรที่ถูกระงับ —',
+    clearAll:            'ล้างทั้งหมด',
+    cardsSuffix:         'บัตร',
+    fullDeck:            'ทั้งหมด',
+    undoBtn:             '↩ เลิกทำ',
+    modeEngThai:         'อังกฤษ → ไทย',
+    modeThaiEng:         'ไทย → อังกฤษ',
+    doneMsg:             (correct, total, pct) => `ถูก ${correct} จาก ${total} (${pct}%)`,
+    noCards:             'ไม่มีบัตรที่ครบกำหนด! 🎉 มาอีกครั้งในภายหลัง หรือเลือกหมวดหมู่เพิ่ม',
+    confirmReset:        'รีเซ็ตความคืบหน้าทั้งหมด? ไม่สามารถยกเลิกได้',
+    catLabels: {
+      numbers: 'ตัวเลข', pronouns: 'สรรพนาม', verbs: 'กริยา',
+      days: 'วัน & เวลา', greetings: 'คำทักทาย', nouns: 'คำนาม',
+      adjectives: 'คุณศัพท์', places: 'สถานที่', patterns: 'รูปประโยค',
+      quantifiers: 'บอกปริมาณ', shopping: 'ช้อปปิ้ง', time: 'เวลา',
+      questions: 'คำถาม', grammar: 'ไวยากรณ์', family: 'ครอบครัว',
+      emotions: 'อารมณ์', transport: 'การเดินทาง', animals: 'สัตว์',
+      colors: 'สี', food: 'อาหาร', body: 'ร่างกาย',
+      health: 'สุขภาพ', home: 'บ้าน', work: 'งาน',
+      clothing: 'เสื้อผ้า', directions: 'ทิศทาง', months: 'เดือน',
+      nature: 'ธรรมชาติ', weather: 'อากาศ', alphabet: 'อักษร', random: 'สุ่ม',
+    },
+  },
+};
+
+let uiLang = 'en';
+
+function setUILang(lang) {
+  uiLang = lang;
+  localStorage.setItem('tf_ui_lang', lang);
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-th').classList.toggle('active', lang === 'th');
+  applyStrings();
+  renderCatGrid(false);
+  updateStudyHeader();
+}
+
+function applyStrings() {
+  const s = STRINGS[uiLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (typeof s[key] === 'string') {
+      el.textContent = s[key];
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+//  THAI CHARACTER SOUND MAP
+// ═══════════════════════════════════════════
+const THAI_SOUNDS = {
+  'ก':'g/k','ข':'kh','ฃ':'kh','ค':'kh','ฅ':'kh','ฆ':'kh','ง':'ng',
+  'จ':'j','ฉ':'ch','ช':'ch','ซ':'s','ฌ':'ch','ญ':'y','ฎ':'d','ฏ':'t',
+  'ฐ':'th','ฑ':'th','ฒ':'th','ณ':'n','ด':'d','ต':'t','ถ':'th','ท':'th',
+  'ธ':'th','น':'n','บ':'b','ป':'p','ผ':'ph','ฝ':'f','พ':'ph','ฟ':'f',
+  'ภ':'ph','ม':'m','ย':'y','ร':'r','ล':'l','ว':'w','ศ':'s','ษ':'s',
+  'ส':'s','ห':'h','ฬ':'l','อ':'(vowel)','ฮ':'h',
+  'า':'aa','ิ':'i','ี':'ii','ึ':'ue','ื':'uee','ุ':'u','ู':'uu',
+  'เ':'e','แ':'ae','โ':'o','ใ':'ai','ไ':'ai','็':'(short)','ั':'a',
+  'ำ':'am','ๆ':'(repeat)','ฯ':'(abbr.)',
+  '่':'(low tone)','้':'(falling)','๊':'(high)','๋':'(rising)',
+  '๐':'0','๑':'1','๒':'2','๓':'3','๔':'4','๕':'5','๖':'6','๗':'7','๘':'8','๙':'9',
+};
+
+function renderThaiScript(script) {
+  if (!script) return '';
+  return [...script].map(ch => {
+    const sound = THAI_SOUNDS[ch];
+    return sound
+      ? `<span class="th-char" data-sound="${sound}">${ch}</span>`
+      : ch;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+//  CATEGORY CONFIG
+// ═══════════════════════════════════════════
+const CAT_CONFIG = {
+  numbers:    { emoji:'🔢', color:'#3b82f6', label:'Numbers' },
+  pronouns:   { emoji:'👤', color:'#ec4899', label:'Pronouns' },
+  verbs:      { emoji:'🏃', color:'#10b981', label:'Verbs' },
+  days:       { emoji:'📅', color:'#06b6d4', label:'Days & Time' },
+  greetings:  { emoji:'🙏', color:'#ef4444', label:'Greetings' },
+  nouns:      { emoji:'📦', color:'#f59e0b', label:'Nouns' },
+  adjectives: { emoji:'⭐', color:'#8b5cf6', label:'Adjectives' },
+  places:     { emoji:'📍', color:'#6366f1', label:'Places' },
+  patterns:   { emoji:'💬', color:'#14b8a6', label:'Patterns' },
+  quantifiers:{ emoji:'🔣', color:'#f97316', label:'Quantifiers' },
+  shopping:   { emoji:'🛒', color:'#84cc16', label:'Shopping' },
+  time:       { emoji:'⏰', color:'#6366f1', label:'Time' },
+  questions:  { emoji:'❓', color:'#a855f7', label:'Questions' },
+  grammar:    { emoji:'📚', color:'#64748b', label:'Grammar' },
+  family:     { emoji:'👨‍👩‍👧', color:'#ec4899', label:'Family' },
+  emotions:   { emoji:'😊', color:'#f472b6', label:'Emotions' },
+  transport:  { emoji:'🚗', color:'#f97316', label:'Transport' },
+  animals:    { emoji:'🐘', color:'#22c55e', label:'Animals' },
+  colors:     { emoji:'🎨', color:'#8b5cf6', label:'Colors' },
+  food:       { emoji:'🍜', color:'#f59e0b', label:'Food & Drinks' },
+  body:       { emoji:'💪', color:'#14b8a6', label:'Body' },
+  health:     { emoji:'💊', color:'#10b981', label:'Health' },
+  home:       { emoji:'🏠', color:'#a855f7', label:'Home' },
+  work:       { emoji:'💼', color:'#64748b', label:'Work' },
+  clothing:   { emoji:'👕', color:'#f97316', label:'Clothing' },
+  directions: { emoji:'🧭', color:'#8b5cf6', label:'Directions' },
+  months:     { emoji:'🗓️', color:'#3b82f6', label:'Months' },
+  nature:     { emoji:'🌿', color:'#84cc16', label:'Nature' },
+  weather:    { emoji:'⛅', color:'#60a5fa', label:'Weather' },
+  alphabet:   { emoji:'🔤', color:'#a855f7', label:'Alphabet' },
+  random:     { emoji:'🎲', color:'#f59e0b', label:'Random' },
+};
+
+// ═══════════════════════════════════════════
+//  SRS CONFIG
+// ═══════════════════════════════════════════
+const SRS_INTERVALS = [0, 1, 2, 4, 8, 16];
+const MAX_REQUEUE   = 3;
+
+// ═══════════════════════════════════════════
+//  PERSISTED STATE
+// ═══════════════════════════════════════════
+let srsData      = {};
+let sessionCount = 0;
+let streak       = 0;
+let lastDate     = '';
+let direction    = 'eng-thai';
+let suspended    = {};
+let settings     = { newCardsPerSession: 10, sessionSize: 20 };
+
+// ═══════════════════════════════════════════
+//  SESSION STATE
+// ═══════════════════════════════════════════
+let selectedCats    = new Set();
+let queue           = [];
+let current         = null;
+let revealed        = false;
+let showingBack     = false;
+let sessionCorrect  = 0;
+let sessionTotal    = 0;
+let sessionCardNum  = 0;
+let sessionQueueSize = 0;
+let againCount      = {};
+let skippedOnce     = new Set();
+let undoSnapshot    = null;
+
+// ═══════════════════════════════════════════
+//  SRS HELPERS
+// ═══════════════════════════════════════════
+function cardKey(idx)  { return 'c' + idx; }
+function getEntry(idx) { return srsData[cardKey(idx)] || { box: 0, next: 0, seen: false }; }
+function getBox(idx)   { return getEntry(idx).box; }
+function isDue(idx)    { const d = getEntry(idx); return sessionCount >= d.next; }
+function isNew(idx)    { return !getEntry(idx).seen; }
+function isSuspended(idx) { return suspended[cardKey(idx)] === true; }
+
+function promoteCard(idx, correct) {
+  const d = getEntry(idx);
+  const newBox = correct ? Math.min(d.box + 1, SRS_INTERVALS.length - 1) : 0;
+  srsData[cardKey(idx)] = {
+    box:  newBox,
+    next: sessionCount + SRS_INTERVALS[newBox],
+    seen: d.seen || correct,
+  };
+  localStorage.setItem('tf_srs', JSON.stringify(srsData));
+}
+
+function seenCount()     { return FOUNDATION.filter((_, i) => getEntry(i).seen).length; }
+function masteredCount() { return FOUNDATION.filter((_, i) => getBox(i) >= SRS_INTERVALS.length - 1).length; }
+
+// ═══════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════
+function updateProgress() {
+  const total    = FOUNDATION.length;
+  const seen     = seenCount();
+  const mastered = masteredCount();
+  document.getElementById('stat-seen-global').textContent     = seen;
+  document.getElementById('stat-total-global').textContent    = total;
+  document.getElementById('stat-mastered-global').textContent = mastered;
+  document.getElementById('progress-fill-seen').style.width     = (seen / total * 100).toFixed(1) + '%';
+  document.getElementById('progress-fill-mastered').style.width = (mastered / total * 100).toFixed(1) + '%';
+}
+
+// ═══════════════════════════════════════════
+//  STREAK
+// ═══════════════════════════════════════════
+function updateStreak() {
+  const today     = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (lastDate === today) return;
+  streak = (lastDate === yesterday) ? streak + 1 : 1;
+  lastDate = today;
+  localStorage.setItem('tf_streak', streak);
+  localStorage.setItem('tf_last_date', lastDate);
+  document.getElementById('streak-pill').textContent = '🔥 ' + streak;
+}
+
+// ═══════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════
+function loadSettings() {
+  const s = localStorage.getItem('tf_settings');
+  if (s) settings = { ...settings, ...JSON.parse(s) };
+}
+function saveSettings() {
+  localStorage.setItem('tf_settings', JSON.stringify(settings));
+}
+function setDirection(d) {
+  direction = d;
+  localStorage.setItem('tf_direction', d);
+  document.getElementById('dir-eng-thai').classList.toggle('active', d === 'eng-thai');
+  document.getElementById('dir-thai-eng').classList.toggle('active', d === 'thai-eng');
+}
+function setSessionSize(n) {
+  settings.sessionSize = n;
+  saveSettings();
+  document.getElementById('size-quick').classList.toggle('active', n === 20);
+  document.getElementById('size-full').classList.toggle('active',  n === 0);
+}
+function setNewCards(v) {
+  settings.newCardsPerSession = parseInt(v);
+  saveSettings();
+  document.getElementById('new-cards-label').textContent = v == 0 ? '∞' : v;
+}
+
+// ═══════════════════════════════════════════
+//  PICKER
+// ═══════════════════════════════════════════
+function showPicker() {
+  document.getElementById('picker-view').style.display   = '';
+  document.getElementById('study-view').style.display    = 'none';
+  document.getElementById('session-done').style.display  = 'none';
+  document.getElementById('session-done').classList.remove('visible');
+  renderCatGrid(true);
+  updateProgress();
+  updateSuspendedNote();
+}
+
+function renderCatGrid(animate) {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = '';
+  grid.classList.remove('animate');
+  const CATS = [...new Set(FOUNDATION.map(w => w.cat))];
+  const s = STRINGS[uiLang];
+  let idx = 0;
+
+  // Random first
+  const rndCfg = CAT_CONFIG.random || { color: '#f59e0b' };
+  const rndBtn = document.createElement('button');
+  rndBtn.className = 'cat-btn' + (selectedCats.has('random') ? ' selected' : '');
+  rndBtn.style.setProperty('--cat-color', rndCfg.color);
+  rndBtn.style.setProperty('--i', idx++);
+  rndBtn.innerHTML = `<div class="cat-btn-left">
+    <span class="cat-emoji">🎲</span>
+    <span class="cat-name">${s.catLabels.random || 'Random'}</span>
+    <span class="cat-total">${s.fullDeck}</span>
+  </div>`;
+  rndBtn.onclick = () => toggleCat('random');
+  grid.appendChild(rndBtn);
+
+  CATS.forEach(cat => {
+    const cfg      = CAT_CONFIG[cat] || { emoji:'📝', color:'#d97706', label: cat };
+    const label    = s.catLabels[cat] || cfg.label;
+    const indices  = FOUNDATION.map((w, i) => w.cat === cat ? i : -1).filter(i => i >= 0);
+    const total    = indices.length;
+    const mastered = indices.filter(i => getBox(i) >= SRS_INTERVALS.length - 1).length;
+
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (selectedCats.has(cat) ? ' selected' : '');
+    btn.style.setProperty('--cat-color', cfg.color);
+    btn.style.setProperty('--i', idx++);
+    btn.innerHTML = `<div class="cat-btn-left">
+      <span class="cat-emoji">${cfg.emoji}</span>
+      <span class="cat-name">${label}</span>
+      <span class="cat-total">${total} ${s.cardsSuffix}</span>
+    </div>
+    <div class="cat-btn-right">
+      <div class="cat-pill cat-pill-green">${mastered}</div>
+      <div class="cat-pill-divider"></div>
+      <div class="cat-pill cat-pill-red">${total - mastered}</div>
+    </div>`;
+    btn.onclick = () => toggleCat(cat);
+    grid.appendChild(btn);
+  });
+
+  if (animate) {
+    void grid.offsetWidth; // force reflow before adding class
+    grid.classList.add('animate');
+  }
+
+  updateWordCount();
+}
+
+function toggleCat(cat) {
+  selectedCats.has(cat) ? selectedCats.delete(cat) : selectedCats.add(cat);
+  renderCatGrid(false);
+}
+
+function toggleAll() {
+  const CATS = [...new Set(FOUNDATION.map(w => w.cat))];
+  const allSelected = CATS.every(c => selectedCats.has(c)) && selectedCats.has('random');
+  if (allSelected) { selectedCats.clear(); }
+  else { CATS.forEach(c => selectedCats.add(c)); selectedCats.add('random'); }
+  renderCatGrid(false);
+}
+
+function updateWordCount() {
+  const s       = STRINGS[uiLang];
+  const count   = FOUNDATION.filter(w => selectedCats.has(w.cat)).length;
+  const hasRnd  = selectedCats.has('random');
+  const rndLabel = s.catLabels.random || 'random';
+  const display = count + (hasRnd && count ? ' + ' + rndLabel : hasRnd ? rndLabel : '');
+  document.getElementById('word-count-note').textContent = count || hasRnd ? display + ' ' + s.cardsSuffix : '';
+  const disabled = selectedCats.size === 0;
+  document.getElementById('btn-start').disabled = disabled;
+  document.getElementById('btn-start-wrap').classList.toggle('disabled', disabled);
+}
+
+function updateSuspendedNote() {
+  const count = Object.keys(suspended).length;
+  const el    = document.getElementById('suspended-note');
+  if (count > 0) {
+    document.getElementById('suspended-count').textContent = count;
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  QUEUE BUILDING
+// ═══════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function interleave(reviews, newCards) {
+  if (!newCards.length) return reviews;
+  const result = [...reviews];
+  const step = Math.max(1, Math.floor(reviews.length / newCards.length));
+  newCards.forEach((card, ni) => {
+    const pos = Math.min(step * (ni + 1), result.length);
+    result.splice(pos, 0, card);
+  });
+  return result;
+}
+
+function buildQueue() {
+  const newLimit  = settings.newCardsPerSession === 0 ? Infinity : settings.newCardsPerSession;
+  const sizeLimit = settings.sessionSize || Infinity;
+
+  const included  = new Set();
+  const dueReview = [], dueNew = [];
+
+  FOUNDATION.forEach((w, i) => {
+    if (!selectedCats.has(w.cat)) return;
+    if (isSuspended(i)) return;
+    if (!isDue(i)) return;
+    included.add(i);
+    (isNew(i) ? dueNew : dueReview).push({ i, w, isNew: isNew(i), isRandom: false });
+  });
+
+  if (selectedCats.has('random')) {
+    const pool = FOUNDATION
+      .map((w, i) => ({ i, w, isNew: isNew(i), isRandom: true }))
+      .filter(e => !included.has(e.i) && !isSuspended(e.i) && isDue(e.i));
+    shuffle(pool);
+    pool.forEach(e => (e.isNew ? dueNew : dueReview).push(e));
+  }
+
+  shuffle(dueReview);
+  shuffle(dueNew);
+
+  const merged = interleave(dueReview, dueNew.slice(0, newLimit));
+  return sizeLimit < Infinity ? merged.slice(0, sizeLimit) : merged;
+}
+
+// ═══════════════════════════════════════════
+//  SESSION
+// ═══════════════════════════════════════════
+function startSession() {
+  sessionCount++;
+  localStorage.setItem('tf_session_count', sessionCount);
+  updateStreak();
+
+  queue            = buildQueue();
+  sessionCorrect   = 0;
+  sessionTotal     = 0;
+  sessionCardNum   = 0;
+  againCount       = {};
+  skippedOnce      = new Set();
+  undoSnapshot     = null;
+  sessionQueueSize = queue.length;
+
+  if (!queue.length) { showNoCards(); return; }
+
+  document.getElementById('picker-view').style.display  = 'none';
+  document.getElementById('session-done').style.display = 'none';
+  document.getElementById('session-done').classList.remove('visible');
+  document.getElementById('study-view').style.display   = '';
+  nextCard();
+}
+
+function showNoCards() {
+  alert(STRINGS[uiLang].noCards);
+  showPicker();
+}
+
+function nextCard() {
+  undoSnapshot = null;
+  document.getElementById('btn-undo').disabled = true;
+
+  if (!queue.length) { showDone(); return; }
+
+  current     = queue.shift();
+  sessionCardNum++;
+  revealed    = false;
+  showingBack = false;
+
+  renderCard(current);
+  updateStudyHeader();
+  updateSessionStats();
+  document.getElementById('btn-reveal-row').style.display = '';
+  document.getElementById('btn-row').style.display        = 'none';
+}
+
+// ═══════════════════════════════════════════
+//  CARD RENDERING
+// ═══════════════════════════════════════════
+function renderCard(entry) {
+  const w   = entry.w;
+  const cfg = CAT_CONFIG[w.cat] || { color:'#d97706', label: w.cat };
+
+  document.getElementById('flip-card').style.setProperty('--cat-color', cfg.color);
+  document.getElementById('flip-card').classList.remove('flipped');
+
+  // Card entrance animation
+  const scene = document.getElementById('card-scene');
+  scene.classList.remove('entering');
+  void scene.offsetWidth;
+  scene.classList.add('entering');
+
+  const catLabel = cfg.label;
+  document.getElementById('card-category').textContent      = catLabel;
+  document.getElementById('card-category-back').textContent = catLabel;
+
+  document.getElementById('card-new-badge').style.display = entry.isNew ? '' : 'none';
+
+  if (direction === 'eng-thai') {
+    document.getElementById('card-front').textContent    = w.en;
+    document.getElementById('card-front').className     = 'card-main';
+    document.getElementById('card-front-sub').innerHTML = '';
+    document.getElementById('thai-roman').textContent   = w.th || '';
+    document.getElementById('thai-roman').style.color   = '';
+    document.getElementById('thai-script').innerHTML    = renderThaiScript(w.script);
+    document.getElementById('thai-script').style.color  = '';
+  } else {
+    document.getElementById('card-front').textContent   = w.th || '';
+    document.getElementById('card-front').className     = 'card-main thai';
+    if (w.script) {
+      document.getElementById('card-front-sub').innerHTML = renderThaiScript(w.script);
+    } else {
+      document.getElementById('card-front-sub').innerHTML =
+        '<span class="no-script-note">no Thai script for this card</span>';
+    }
+    document.getElementById('thai-roman').textContent   = w.en;
+    document.getElementById('thai-roman').style.color   = '#1e293b';
+    document.getElementById('thai-script').textContent  = w.th || '';
+    document.getElementById('thai-script').style.color  = '#94a3b8';
+  }
+
+  const noteEl = document.getElementById('card-note-back');
+  if (w.note) {
+    noteEl.textContent   = w.note;
+    noteEl.style.display = '';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  const dotsEl = document.getElementById('srs-dots');
+  dotsEl.innerHTML = '';
+  SRS_INTERVALS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'srs-dot' + (i <= getBox(current.i) ? ' filled' : '');
+    dotsEl.appendChild(d);
+  });
+}
+
+function updateStudyHeader() {
+  const s = STRINGS[uiLang];
+  document.getElementById('study-counter').textContent    = sessionCardNum + ' / ' + sessionQueueSize;
+  document.getElementById('study-header-mode').textContent = direction === 'eng-thai' ? s.modeEngThai : s.modeThaiEng;
+  const pct = sessionQueueSize ? ((sessionCardNum - 1) / sessionQueueSize * 100) : 0;
+  document.getElementById('session-progress-fill').style.width = pct + '%';
+}
+
+function updateSessionStats() {
+  document.getElementById('stat-session').textContent = sessionTotal;
+  document.getElementById('stat-correct').textContent = sessionCorrect;
+  document.getElementById('stat-deck').textContent    = queue.length;
+}
+
+// ═══════════════════════════════════════════
+//  CARD INTERACTION
+// ═══════════════════════════════════════════
+function toggleFlip() {
+  if (!revealed) { revealCard(); return; }
+  showingBack = !showingBack;
+  document.getElementById('flip-card').classList.toggle('flipped', showingBack);
+}
+
+function revealCard() {
+  revealed    = true;
+  showingBack = true;
+  const fc = document.getElementById('flip-card');
+  fc.classList.add('flipped');
+  fc.classList.remove('just-revealed');
+  // Trigger glow after flip animation completes (~420ms)
+  setTimeout(() => fc.classList.add('just-revealed'), 380);
+  document.getElementById('btn-reveal-row').style.display = 'none';
+  document.getElementById('btn-row').style.display        = '';
+}
+
+function answer(correct) {
+  if (!revealed) return;
+
+  // Button flash feedback
+  const btn = document.getElementById(correct ? 'btn-got-it' : 'btn-again');
+  if (btn) {
+    btn.classList.remove('flash');
+    void btn.offsetWidth;
+    btn.classList.add('flash');
+    setTimeout(() => btn.classList.remove('flash'), 350);
+  }
+
+  undoSnapshot = {
+    srsData:        JSON.parse(JSON.stringify(srsData)),
+    sessionCorrect,
+    sessionTotal,
+    sessionCardNum,
+    againCount:     { ...againCount },
+    skippedOnce:    new Set(skippedOnce),
+    previousCard:   current,
+    queueSnapshot:  [...queue],
+  };
+  document.getElementById('btn-undo').disabled = false;
+
+  promoteCard(current.i, correct);
+
+  if (correct) {
+    sessionCorrect++;
+  } else {
+    const key = current.i;
+    againCount[key] = (againCount[key] || 0) + 1;
+    if (againCount[key] <= MAX_REQUEUE) {
+      queue.push(current);
+    }
+  }
+
+  sessionTotal++;
+  updateProgress();
+  nextCard();
+}
+
+function skipCard() {
+  const key = current.i;
+  if (!skippedOnce.has(key)) {
+    skippedOnce.add(key);
+    queue.push(current);
+  }
+  revealed    = false;
+  showingBack = false;
+  nextCard();
+}
+
+function suspendCard() {
+  suspended[cardKey(current.i)] = true;
+  localStorage.setItem('tf_suspended', JSON.stringify(suspended));
+  nextCard();
+}
+
+function clearAllSuspended() {
+  suspended = {};
+  localStorage.removeItem('tf_suspended');
+  updateSuspendedNote();
+  renderCatGrid(false);
+}
+
+function undoLast() {
+  if (!undoSnapshot) return;
+
+  srsData        = undoSnapshot.srsData;
+  sessionCorrect = undoSnapshot.sessionCorrect;
+  sessionTotal   = undoSnapshot.sessionTotal;
+  sessionCardNum = undoSnapshot.sessionCardNum;
+  againCount     = undoSnapshot.againCount;
+  skippedOnce    = undoSnapshot.skippedOnce;
+  queue          = undoSnapshot.queueSnapshot;
+  localStorage.setItem('tf_srs', JSON.stringify(srsData));
+
+  current     = undoSnapshot.previousCard;
+  undoSnapshot = null;
+  document.getElementById('btn-undo').disabled = true;
+
+  revealed    = false;
+  showingBack = false;
+
+  renderCard(current);
+  updateStudyHeader();
+  updateSessionStats();
+  document.getElementById('btn-reveal-row').style.display = '';
+  document.getElementById('btn-row').style.display        = 'none';
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════
+//  AUDIO
+// ═══════════════════════════════════════════
+function speak() {
+  const w = current?.w;
+  if (!w) return;
+  const btn = document.getElementById('btn-speak');
+  btn.disabled = true;
+  speechSynthesis.cancel();
+
+  const utt  = new SpeechSynthesisUtterance();
+  utt.rate   = 0.85;
+  const isFrontEnglish = (direction === 'eng-thai' && !showingBack) ||
+                         (direction === 'thai-eng' && showingBack);
+  if (isFrontEnglish) {
+    utt.text = w.en;
+    utt.lang = 'en-US';
+  } else {
+    utt.text = w.script || w.th;
+    utt.lang = 'th-TH';
+    const voices = speechSynthesis.getVoices();
+    const thai   = voices.find(v => v.lang === 'th-TH') || voices.find(v => v.lang.startsWith('th'));
+    if (thai) utt.voice = thai;
+  }
+  utt.onend  = () => { btn.disabled = false; };
+  utt.onerror = () => { btn.disabled = false; };
+  speechSynthesis.speak(utt);
+}
+
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+
+// ═══════════════════════════════════════════
+//  DONE
+// ═══════════════════════════════════════════
+function showDone() {
+  document.getElementById('study-view').style.display = 'none';
+  document.getElementById('session-done').style.display = '';
+  document.getElementById('session-done').classList.add('visible');
+  document.getElementById('done-correct').textContent  = sessionCorrect;
+  document.getElementById('done-total').textContent    = sessionTotal;
+  document.getElementById('done-seen').textContent     = seenCount();
+  document.getElementById('done-mastered').textContent = masteredCount();
+  const pct = sessionTotal ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
+  document.getElementById('done-msg').textContent =
+    STRINGS[uiLang].doneMsg(sessionCorrect, sessionTotal, pct);
+  updateProgress();
+  fireConfetti();
+}
+
+function fireConfetti() {
+  const colors = ['#d97706','#f59e0b','#fbbf24','#4ade80','#f87171','#a78bfa'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;top:0;background:${colors[i%colors.length]};animation-delay:${Math.random()*0.6}s;animation-duration:${1.2+Math.random()*0.8}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════
+function resetProgress() {
+  if (!confirm(STRINGS[uiLang].confirmReset)) return;
+  ['tf_srs','tf_session_count','tf_streak','tf_last_date','tf_suspended'].forEach(k =>
+    localStorage.removeItem(k)
+  );
+  srsData = {}; sessionCount = 0; streak = 0; suspended = {};
+  document.getElementById('streak-pill').textContent = '🔥 0';
+  showPicker();
+}
+
+// ═══════════════════════════════════════════
+//  THAI CHAR TOOLTIP — mobile tap support
+// ═══════════════════════════════════════════
+let _tipTimer = null;
+document.addEventListener('click', e => {
+  const char = e.target.closest('.th-char');
+  // Dismiss any other open tips
+  document.querySelectorAll('.th-char.tip-active').forEach(el => {
+    if (el !== char) el.classList.remove('tip-active');
+  });
+  if (char) {
+    e.stopPropagation();
+    const wasActive = char.classList.contains('tip-active');
+    char.classList.toggle('tip-active', !wasActive);
+    clearTimeout(_tipTimer);
+    if (!wasActive) {
+      _tipTimer = setTimeout(() => char.classList.remove('tip-active'), 2500);
+    }
+  }
+}, true);
+
+// ═══════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (document.getElementById('study-view').style.display === 'none') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch (e.key) {
+    case ' ':
+      e.preventDefault();
+      if (!revealed) revealCard();
+      break;
+    case 'Enter':
+      if (!revealed) revealCard();
+      break;
+    case 'ArrowRight':
+      if (revealed) answer(true);
+      break;
+    case 'ArrowLeft':
+      if (revealed) answer(false);
+      break;
+    case 'u': case 'U':
+      undoLast();
+      break;
+    case 's': case 'S':
+      if (!revealed) skipCard();
+      break;
+  }
+});
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+(function init() {
+  srsData      = JSON.parse(localStorage.getItem('tf_srs')            || '{}');
+  sessionCount = parseInt(localStorage.getItem('tf_session_count')    || '0');
+  streak       = parseInt(localStorage.getItem('tf_streak')           || '0');
+  lastDate     =          localStorage.getItem('tf_last_date')        || '';
+  direction    =          localStorage.getItem('tf_direction')        || 'eng-thai';
+  suspended    = JSON.parse(localStorage.getItem('tf_suspended')      || '{}');
+  uiLang       =          localStorage.getItem('tf_ui_lang')          || 'en';
+  loadSettings();
+
+  document.getElementById('streak-pill').textContent = '🔥 ' + streak;
+  document.getElementById('lang-en').classList.toggle('active', uiLang === 'en');
+  document.getElementById('lang-th').classList.toggle('active', uiLang === 'th');
+  applyStrings();
+  setDirection(direction);
+
+  // Normalise: any non-zero legacy size (e.g. 10) becomes 20
+  if (settings.sessionSize !== 0) { settings.sessionSize = 20; saveSettings(); }
+  const sz = settings.sessionSize;
+  document.getElementById('size-quick').classList.toggle('active', sz !== 0);
+  document.getElementById('size-full').classList.toggle('active',  sz === 0);
+  const nc = settings.newCardsPerSession;
+  document.getElementById('new-cards-slider').value      = nc;
+  document.getElementById('new-cards-label').textContent = nc === 0 ? '∞' : nc;
+
+  showPicker();
+})();
+</script>
+</body>
+</html>

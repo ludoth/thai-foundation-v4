@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pronunciation Guide · Thai Foundation</title>
+  <style>
+    :root {
+      --bg:         #100f0d;
+      --surface:    #1c1a16;
+      --border:     #3a3020;
+      --accent:     #d97706;
+      --accent-hi:  #f59e0b;
+      --accent-bg:  #1f1700;
+      --accent-bdr: #5a3e00;
+      --text:       #f0e8d8;
+      --text-muted: #8a7a68;
+      --text-dim:   #4a3a28;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 40px 24px 60px;
+    }
+    .top-bar {
+      width: 100%; max-width: 640px; display: flex;
+      align-items: center; justify-content: space-between; margin-bottom: 36px;
+    }
+    .back-btn {
+      font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
+      border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .back-btn:hover { color: var(--text); border-color: #5a4a30; }
+
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 6px; text-align: center; }
+    .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 32px; text-align: center; }
+
+    .section {
+      width: 100%; max-width: 640px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 24px; margin-bottom: 14px;
+    }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .section-emoji { font-size: 1.4rem; }
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .section p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 10px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    .hl {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 5px; padding: 1px 7px;
+      font-size: 0.82rem; color: var(--accent-hi); font-weight: 600;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th {
+      text-align: left; font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-muted); padding: 0 8px 10px;
+    }
+    td {
+      padding: 7px 8px; color: var(--text-muted);
+      border-bottom: 1px solid var(--bg); vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { color: var(--accent-hi); font-weight: 700; font-size: 0.9rem; }
+    td .thai { font-size: 1.1rem; color: var(--accent); }
+    td .example { color: var(--text-dim); font-style: italic; font-size: 0.8rem; }
+
+    .tone-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;
+    }
+    .tone-pill {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      min-width: 80px;
+    }
+    .tone-name { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .tone-mark { font-size: 1.8rem; color: var(--accent-hi); font-weight: 700; line-height: 1; }
+    .tone-desc { font-size: 0.7rem; color: var(--text-dim); text-align: center; }
+
+    .tip {
+      background: var(--accent-bg); border: 1px solid var(--accent-bdr);
+      border-radius: 10px; padding: 12px 16px; margin-top: 12px;
+      font-size: 0.82rem; color: var(--accent-hi); line-height: 1.65;
+    }
+
+    .made-by { margin-top: 40px; font-size: 0.7rem; color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html" id="nav-back">← Back</a>
+  <a class="back-btn" href="how-to-use.html" id="nav-howto">How to use</a>
+</div>
+
+<h1>🗣️ Pronunciation Guide</h1>
+<p class="subtitle">How to read the phonetic Thai in this app</p>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">📖</div>
+    <div class="section-title">What system does this app use?</div>
+  </div>
+  <p>The app uses the <strong>Thai Foundation Course</strong> book's own phonetic system — a simplified romanisation designed for English speakers. It is <em>not</em> the official RTGS system used in dictionaries.</p>
+  <p>The goal is <strong>practical pronunciation</strong>, not linguistic precision. Once you understand the patterns, you can read any word in the app correctly.</p>
+  <p>Hover over any Thai script letter on a card to see its approximate sound.</p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">🎵</div>
+    <div class="section-title">The 5 tones — the most important thing</div>
+  </div>
+  <p>Thai is a tonal language. The same syllable said in 5 different tones means 5 completely different things. Tones are marked with diacritic symbols above vowels.</p>
+
+  <div class="tone-bar">
+    <div class="tone-pill">
+      <span class="tone-name">Mid</span>
+      <span class="tone-mark">a</span>
+      <span class="tone-desc">no mark, flat</span>
+    </div>
+    <div class="tone-pill">
+      <span class="tone-name">Low</span>
+      <span class="tone-mark">à</span>
+      <span class="tone-desc">starts low, stays low</span>
+    </div>
+    <div class="tone-pill">
+      <span class="tone-name">Falling</span>
+      <span class="tone-mark">â</span>
+      <span class="tone-desc">starts high, falls</span>
+    </div>
+    <div class="tone-pill">
+      <span class="tone-name">High</span>
+      <span class="tone-mark">á</span>
+      <span class="tone-desc">starts high, stays</span>
+    </div>
+    <div class="tone-pill">
+      <span class="tone-name">Rising</span>
+      <span class="tone-mark">ǎ</span>
+      <span class="tone-desc">dips then rises</span>
+    </div>
+  </div>
+
+  <p>Example: <span class="hl">maa</span> = come (mid) · <span class="hl">mâa</span> = horse (falling) · <span class="hl">màa</span> = dog (low)</p>
+  <div class="tip">💡 Don't stress about tones at first. Focus on getting the vowel and consonant sounds right. Tones come naturally with listening practice. The 🔊 button helps you hear the correct tone.</div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">🔤</div>
+    <div class="section-title">Vowel sounds</div>
+  </div>
+  <table>
+    <tr><th>Written</th><th>Sounds like</th><th>Example</th></tr>
+    <tr><td>a</td><td>short "a" as in <em>cup</em></td><td><span class="example">pan (open)</span></td></tr>
+    <tr><td>aa</td><td>long "a" as in <em>father</em></td><td><span class="example">maa (come)</span></td></tr>
+    <tr><td>i</td><td>short "i" as in <em>bit</em></td><td><span class="example">gin (eat)</span></td></tr>
+    <tr><td>ii</td><td>long "ee" as in <em>see</em></td><td><span class="example">phi (older sibling)</span></td></tr>
+    <tr><td>u</td><td>short "u" as in <em>put</em></td><td><span class="example">tuk (every)</span></td></tr>
+    <tr><td>uu</td><td>long "oo" as in <em>moon</em></td><td><span class="example">muu (hand)</span></td></tr>
+    <tr><td>ue</td><td>no English equivalent — say "ee" with rounded lips</td><td><span class="example">seua (shirt)</span></td></tr>
+    <tr><td>uee</td><td>longer version of ue</td><td><span class="example">cheua (believe)</span></td></tr>
+    <tr><td>e</td><td>"e" as in <em>bed</em></td><td><span class="example">lek (small)</span></td></tr>
+    <tr><td>ae</td><td>"a" as in <em>cat</em></td><td><span class="example">maew (cat)</span></td></tr>
+    <tr><td>o</td><td>"o" as in <em>go</em></td><td><span class="example">rot (car)</span></td></tr>
+    <tr><td>oo</td><td>"or" as in <em>more</em></td><td><span class="example">koon (you, informal)</span></td></tr>
+    <tr><td>ai</td><td>"eye"</td><td><span class="example">jai (heart/mind)</span></td></tr>
+    <tr><td>ao</td><td>"ow" as in <em>cow</em></td><td><span class="example">khao (rice)</span></td></tr>
+    <tr><td>ia</td><td>"ia" as in <em>idea</em></td><td><span class="example">bia (beer)</span></td></tr>
+    <tr><td>ua</td><td>"oo-a"</td><td><span class="example">sua (tiger)</span></td></tr>
+    <tr><td>am</td><td>"um" as in <em>sum</em></td><td><span class="example">nam (water)</span></td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">🔠</div>
+    <div class="section-title">Consonant sounds — the tricky ones</div>
+  </div>
+  <p>Most consonants sound as expected. These are the ones that confuse English speakers:</p>
+  <table>
+    <tr><th>Written</th><th>Sounds like</th><th>Note</th></tr>
+    <tr><td>ph</td><td>"p" as in <em>pot</em></td><td>NOT "f" — it's an aspirated p</td></tr>
+    <tr><td>th</td><td>"t" as in <em>top</em></td><td>NOT "th" in <em>the</em> — it's an aspirated t</td></tr>
+    <tr><td>kh</td><td>"k" as in <em>king</em></td><td>Aspirated k, like a soft "kh"</td></tr>
+    <tr><td>ng</td><td>"ng" as in <em>sing</em></td><td>Can appear at the START of a word — e.g. ngoo (snake)</td></tr>
+    <tr><td>bp</td><td>between "b" and "p"</td><td>Unaspirated — softer than English p</td></tr>
+    <tr><td>dt</td><td>between "d" and "t"</td><td>Unaspirated — softer than English t</td></tr>
+    <tr><td>j</td><td>"j" as in <em>jump</em></td><td>Same as English</td></tr>
+    <tr><td>ch</td><td>"ch" as in <em>chair</em></td><td>Same as English</td></tr>
+    <tr><td>r</td><td>rolled "r"</td><td>Often sounds like "l" in casual speech</td></tr>
+    <tr><td>final -k</td><td>unaspirated stop</td><td>Don't release the k — just stop the air</td></tr>
+    <tr><td>final -t</td><td>unaspirated stop</td><td>Same — stop the air, no release</td></tr>
+    <tr><td>final -p</td><td>unaspirated stop</td><td>Same — lips close but no burst</td></tr>
+  </table>
+  <div class="tip">💡 The key insight: Thai has <strong>aspirated</strong> (with a puff of air) and <strong>unaspirated</strong> consonants. <span class="hl">ph</span>, <span class="hl">th</span>, <span class="hl">kh</span> = aspirated (air puff). Plain <span class="hl">p</span>, <span class="hl">t</span>, <span class="hl">k</span> = no air puff.</div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">💡</div>
+    <div class="section-title">Common patterns to know</div>
+  </div>
+  <table>
+    <tr><th>Pattern</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>mai</td><td>not / negation</td><td><span class="example">mai bpai = I won't go</span></td></tr>
+    <tr><td>mai … ?</td><td>yes/no question ending</td><td><span class="example">sabai dee mai? = Are you well?</span></td></tr>
+    <tr><td>khun</td><td>you (polite)</td><td><span class="example">khun bpai mai? = Are you going?</span></td></tr>
+    <tr><td>phom / chan</td><td>I (male / female)</td><td><span class="example">phom bpai = I'm going (male)</span></td></tr>
+    <tr><td>ka / krap</td><td>polite particle (F / M)</td><td><span class="example">kob khun krap = Thank you (male)</span></td></tr>
+    <tr><td>sii + colour</td><td>colour prefix</td><td><span class="example">sii daeng = red</span></td></tr>
+    <tr><td>rot + vehicle</td><td>vehicle compound</td><td><span class="example">rot fai = train (fire car)</span></td></tr>
+    <tr><td>nam + thing</td><td>liquid compound</td><td><span class="example">nam pla = fish sauce (fish water)</span></td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-emoji">🇹🇭</div>
+    <div class="section-title">Reading Thai script</div>
+  </div>
+  <p>Thai script reads left to right, but vowels can appear above, below, before, or after their consonant. There are no spaces between words.</p>
+  <p>In this app, <strong>hover over any Thai character</strong> on the back of a card to see its approximate sound. This is a learning aid — individual character sounds don't always match pronunciation in context due to tonal rules and vowel combinations.</p>
+  <div class="tip">💡 The best way to learn Thai script is to study it systematically alongside this app. The romanisation in this app will get you speaking — the script will take longer but is deeply rewarding.</div>
+</div>
+
+<div class="made-by">✦ Thai Foundation v3</div>
+<script>
+const _l = localStorage.getItem('tf_ui_lang') || 'en';
+if (_l === 'th') {
+  document.getElementById('nav-back').textContent  = '← กลับ';
+  document.getElementById('nav-howto').textContent = 'วิธีใช้';
+}
+</script>
+</body>
+</html>
