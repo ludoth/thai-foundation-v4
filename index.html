@@ -65,10 +65,11 @@
     /* ── Top bar ── */
     .top-bar {
       display: flex; align-items: center; justify-content: space-between;
-      width: 100%; max-width: 520px; margin-bottom: 16px;
-      gap: 8px; flex-wrap: wrap;
+      width: 100%; max-width: 520px; margin-bottom: 16px; gap: 10px;
+      position: relative;
     }
-    .top-bar-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .top-bar-left { display: flex; align-items: center; gap: 8px; }
+    .top-bar-right { display: flex; align-items: center; gap: 8px; position: relative; }
     h1 { font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
 
     .streak-pill {
@@ -78,13 +79,37 @@
       font-size: 0.78rem; font-weight: 800; color: var(--accent-hi);
     }
 
-    .top-nav { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-    .top-link {
-      font-size: 0.73rem; color: var(--text-muted); text-decoration: none;
-      border: 1px solid var(--border); padding: 5px 9px; border-radius: 8px;
-      white-space: nowrap; transition: color 0.15s, border-color 0.15s;
+    /* Hamburger menu */
+    .menu-btn {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 6px 10px; cursor: pointer;
+      color: var(--text-muted); font-size: 1rem; line-height: 1;
+      transition: color 0.15s, border-color 0.15s;
     }
-    .top-link:hover { color: var(--text); border-color: var(--border-hi); }
+    .menu-btn:hover { color: var(--text); border-color: var(--border-hi); }
+
+    .nav-menu {
+      position: absolute; top: calc(100% + 6px); right: 0;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 6px; z-index: 200;
+      min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      animation: menu-in 0.15s ease-out;
+    }
+    @keyframes menu-in {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .nav-menu a, .nav-menu button {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 9px 12px; color: var(--text-muted); text-decoration: none;
+      font-size: 0.82rem; font-weight: 600; border-radius: 8px;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      transition: background 0.1s, color 0.1s;
+    }
+    .nav-menu a:hover, .nav-menu button:hover {
+      background: var(--surface-up); color: var(--text);
+    }
+    .nav-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
     /* Language switcher */
     .lang-switcher {
@@ -134,46 +159,24 @@
       letter-spacing: 0.09em; align-self: flex-start; font-weight: 700;
     }
 
-    .dir-row, .diff-row, .mode-row { display: flex; gap: 7px; width: 100%; flex-wrap: wrap; }
-    .pill-btn {
-      flex: 1; min-width: 0; padding: 9px 6px; border-radius: 10px; font-size: 0.82rem;
-      font-weight: 600; border: 1.5px solid var(--border);
-      background: var(--surface); color: var(--text-muted);
-      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    /* Compact controls strip — direction / mode / difficulty above Start */
+    .compact-controls {
+      display: flex; gap: 8px; width: 100%;
     }
-    .pill-btn.active {
-      border-color: var(--accent); background: var(--accent-bg);
-      color: var(--accent-hi);
+    .ctrl-btn {
+      flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 9px 10px; cursor: pointer;
+      text-align: left; transition: border-color 0.15s, background 0.15s;
+      display: flex; flex-direction: column; gap: 3px; min-width: 0;
     }
-    .pill-btn:hover:not(.active) {
-      border-color: var(--border-hi); color: var(--text);
+    .ctrl-btn:hover { border-color: var(--border-hi); }
+    .ctrl-label {
+      font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text-dim); font-weight: 700; line-height: 1;
     }
-
-    /* New cards slider — custom styled */
-    .slider-row { display: flex; align-items: center; gap: 12px; width: 100%; }
-    .slider-row input[type=range] {
-      flex: 1; cursor: pointer; height: 4px;
-      -webkit-appearance: none; appearance: none;
-      background: var(--surface-up); border-radius: 99px; outline: none;
-    }
-    .slider-row input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px; height: 18px; border-radius: 50%;
-      background: var(--accent); cursor: pointer;
-      box-shadow: 0 0 0 3px var(--accent-bg), 0 0 0 4px var(--accent-bdr);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .slider-row input[type=range]::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 4px var(--accent-bg), 0 0 0 6px var(--accent-bdr);
-    }
-    .slider-row input[type=range]::-moz-range-thumb {
-      width: 18px; height: 18px; border-radius: 50%;
-      background: var(--accent); border: none; cursor: pointer;
-    }
-    .slider-val {
-      font-size: 0.85rem; font-weight: 800; color: var(--accent-hi);
-      min-width: 28px; text-align: right;
+    .ctrl-value {
+      font-size: 0.8rem; font-weight: 700; color: var(--accent-hi);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
     }
 
     /* Cat grid — 3 columns */
@@ -219,9 +222,10 @@
       gap: 3px; flex-shrink: 0; align-items: center;
     }
     .cat-pill { font-size: 0.75rem; font-weight: 700; }
-    .cat-pill-green { color: var(--green); }
+    .cat-pill-green  { color: var(--green); }
+    .cat-pill-orange { color: #f97316; }
+    .cat-pill-red    { color: var(--red); }
     .cat-pill-divider { width: 12px; height: 1px; background: var(--border); }
-    .cat-pill-red { color: var(--red); }
 
     .picker-row {
       display: flex; justify-content: space-between;
@@ -241,12 +245,12 @@
     }
     .clear-link:hover { color: var(--accent-hi); }
 
-    /* Start button — sticky so it's always above the fold */
+    /* Start button + compact controls — sticky so always above the fold */
     .btn-start-wrap {
       position: sticky; bottom: 0; width: 100%;
-      padding: 16px 0 12px;
-      background: linear-gradient(to top, var(--bg) 60%, transparent);
-      z-index: 10;
+      padding: 12px 0 12px;
+      background: linear-gradient(to top, var(--bg) 65%, transparent);
+      z-index: 10; display: flex; flex-direction: column; gap: 8px;
     }
     .btn-start-wrap .tooltip {
       display: none; position: absolute; bottom: calc(100% + 8px);
@@ -619,15 +623,22 @@
     <h1>🇹🇭 <span data-i18n="appTitle">Thai Foundation</span></h1>
     <div class="streak-pill" id="streak-pill">🔥 0</div>
   </div>
-  <div class="top-nav">
+  <div class="top-bar-right">
     <div class="lang-switcher">
       <button class="lang-btn active" id="lang-en" onclick="setUILang('en')">EN</button>
       <button class="lang-btn"        id="lang-th" onclick="setUILang('th')">ไทย</button>
     </div>
-    <a href="stats.html"     class="top-link" data-i18n="linkStats">Stats</a>
-    <a href="phonetics.html" class="top-link" data-i18n="linkPhonetics">Phonetics</a>
-    <a href="how-to-use.html" class="top-link" data-i18n="linkHowTo">How to use</a>
+    <button class="menu-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
   </div>
+</div>
+
+<!-- Nav dropdown menu — positioned relative to top-bar-right via JS -->
+<div class="nav-menu" id="nav-menu" style="display:none;position:fixed;right:20px;top:54px" role="menu">
+  <a href="stats.html">📊 <span data-i18n="linkStats">Stats</span></a>
+  <a href="phonetics.html">🗣️ <span data-i18n="linkPhonetics">Phonetics</span></a>
+  <a href="how-to-use.html">📖 <span data-i18n="linkHowTo">How to use</span></a>
+  <div class="nav-menu-divider"></div>
+  <button onclick="resetProgress()">🔄 <span data-i18n="resetLink">reset all progress</span></button>
 </div>
 
 <!-- Global progress -->
@@ -645,37 +656,7 @@
 <!-- ── PICKER VIEW ── -->
 <div id="picker-view">
 
-  <div class="picker-label" data-i18n="labelDirection">Direction</div>
-  <div class="dir-row">
-    <button class="pill-btn active" id="dir-eng-thai" onclick="setDirection('eng-thai')" data-i18n="dirEngThai">Eng → Thai</button>
-    <button class="pill-btn"        id="dir-thai-eng" onclick="setDirection('thai-eng')" data-i18n="dirThaiEng">Thai → Eng</button>
-  </div>
-
-  <div class="picker-label" data-i18n="labelDifficulty">Difficulty</div>
-  <div class="diff-row">
-    <button class="pill-btn active" id="diff-all"          onclick="setDifficulty('all')"          data-i18n="diffAll">All</button>
-    <button class="pill-btn"        id="diff-beginner"     onclick="setDifficulty('beginner')"     data-i18n="diffBeginner">Beginner</button>
-    <button class="pill-btn"        id="diff-intermediate" onclick="setDifficulty('intermediate')" data-i18n="diffIntermediate">Intermediate</button>
-    <button class="pill-btn"        id="diff-advanced"     onclick="setDifficulty('advanced')"     data-i18n="diffAdvanced">Advanced</button>
-  </div>
-
-  <div class="picker-label" data-i18n="labelMode">Study mode</div>
-  <div class="mode-row">
-    <button class="pill-btn active" id="mode-flashcard" onclick="setStudyMode('flashcard')" data-i18n="modeFlashcard">Flashcard</button>
-    <button class="pill-btn"        id="mode-typing"    onclick="setStudyMode('typing')"    data-i18n="modeTyping">Typing</button>
-    <button class="pill-btn"        id="mode-tone"      onclick="setStudyMode('tone')"      data-i18n="modeTone">Tone Quiz</button>
-  </div>
-
-  <div class="picker-label" data-i18n="labelNewCards">New cards per session</div>
-  <div class="slider-row">
-    <input type="range" id="new-cards-slider" min="0" max="20" value="10"
-           oninput="setNewCards(this.value)">
-    <span class="slider-val" id="new-cards-label">10</span>
-  </div>
-
-  <div class="picker-divider"></div>
-
-  <!-- Categories — shown before the Start button -->
+  <!-- Categories -->
   <div class="picker-label" data-i18n="labelCategories">Categories</div>
   <div class="cat-grid" id="cat-grid"></div>
 
@@ -689,9 +670,25 @@
     <span class="clear-link" onclick="clearAllSuspended()" data-i18n="clearAll">clear all</span>
   </div>
 
-  <!-- Start button — below categories -->
+  <!-- Compact controls + Start — sticky at bottom -->
   <div class="btn-start-wrap disabled" id="btn-start-wrap">
     <span class="tooltip" data-i18n="tooltipStart">Select at least one category</span>
+
+    <div class="compact-controls">
+      <button class="ctrl-btn" id="ctrl-direction" onclick="cycleDirection()" aria-label="Toggle direction">
+        <span class="ctrl-label" data-i18n="labelDirection">Direction</span>
+        <span class="ctrl-value" id="ctrl-dir-val">Eng → Thai</span>
+      </button>
+      <button class="ctrl-btn" id="ctrl-mode" onclick="cycleMode()" aria-label="Change study mode">
+        <span class="ctrl-label" data-i18n="labelMode">Mode</span>
+        <span class="ctrl-value" id="ctrl-mode-val">Flashcard</span>
+      </button>
+      <button class="ctrl-btn" id="ctrl-difficulty" onclick="cycleDifficulty()" aria-label="Change difficulty">
+        <span class="ctrl-label" data-i18n="labelDifficulty">Level</span>
+        <span class="ctrl-value" id="ctrl-diff-val">All</span>
+      </button>
+    </div>
+
     <button class="btn-start" id="btn-start" onclick="startSession()" disabled data-i18n="btnStart">
       Start studying
     </button>
@@ -831,8 +828,7 @@
 </div>
 
 <div class="reset-area">
-  <div class="reset-link" onclick="resetProgress()" data-i18n="resetLink">reset all progress</div>
-  <div class="made-by">✦ Thai Foundation v3</div>
+  <div class="made-by">✦ Thai Foundation v4</div>
 </div>
 
 <script>
@@ -996,6 +992,7 @@ function setUILang(lang) {
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   document.getElementById('lang-th').classList.toggle('active', lang === 'th');
   applyStrings();
+  updateCompactControls();
   renderCatGrid(false);
   updateStudyHeader();
 }
@@ -1277,7 +1274,7 @@ let direction    = 'eng-thai';
 let suspended    = {};
 let difficulty   = 'all';
 let studyMode    = 'flashcard';
-let settings     = { newCardsPerSession: 10 };
+let settings     = { newCardsPerSession: 20 };
 
 // ═══════════════════════════════════════════
 //  SESSION STATE
@@ -1362,15 +1359,15 @@ function saveSettings() {
 function setDirection(d) {
   direction = d;
   localStorage.setItem('tf_direction', d);
-  document.getElementById('dir-eng-thai').classList.toggle('active', d === 'eng-thai');
-  document.getElementById('dir-thai-eng').classList.toggle('active', d === 'thai-eng');
+  updateCompactControls();
+}
+
+function cycleDirection() {
+  setDirection(direction === 'eng-thai' ? 'thai-eng' : 'eng-thai');
 }
 function setDifficulty(d) {
   difficulty = d;
   localStorage.setItem('tf_difficulty', d);
-  ['all','beginner','intermediate','advanced'].forEach(id => {
-    document.getElementById('diff-' + id).classList.toggle('active', id === d);
-  });
   if (d !== 'all') {
     selectedCats.clear();
     DIFFICULTY_MAP[d].forEach(c => {
@@ -1378,21 +1375,53 @@ function setDifficulty(d) {
     });
     renderCatGrid(false);
   }
+  updateCompactControls();
+}
+
+const DIFF_CYCLE = ['all','beginner','intermediate','advanced'];
+function cycleDifficulty() {
+  const next = DIFF_CYCLE[(DIFF_CYCLE.indexOf(difficulty) + 1) % DIFF_CYCLE.length];
+  setDifficulty(next);
 }
 
 function setStudyMode(m) {
   studyMode = m;
   localStorage.setItem('tf_mode', m);
-  ['flashcard','typing','tone'].forEach(id => {
-    document.getElementById('mode-' + id).classList.toggle('active', id === m);
-  });
+  updateCompactControls();
 }
 
-function setNewCards(v) {
-  settings.newCardsPerSession = parseInt(v);
-  saveSettings();
-  document.getElementById('new-cards-label').textContent = v == 0 ? '∞' : v;
+const MODE_CYCLE = ['flashcard','typing','tone'];
+function cycleMode() {
+  const next = MODE_CYCLE[(MODE_CYCLE.indexOf(studyMode) + 1) % MODE_CYCLE.length];
+  setStudyMode(next);
 }
+
+function updateCompactControls() {
+  const s = STRINGS[uiLang];
+  const dirLabels = { 'eng-thai': s.dirEngThai, 'thai-eng': s.dirThaiEng };
+  const modeLabels = { flashcard: s.modeFlashcard, typing: s.modeTyping, tone: s.modeTone };
+  const diffLabels = { all: s.diffAll, beginner: s.diffBeginner, intermediate: s.diffIntermediate, advanced: s.diffAdvanced };
+  document.getElementById('ctrl-dir-val').textContent  = dirLabels[direction]  || direction;
+  document.getElementById('ctrl-mode-val').textContent = modeLabels[studyMode] || studyMode;
+  document.getElementById('ctrl-diff-val').textContent = diffLabels[difficulty] || difficulty;
+}
+
+function toggleMenu() {
+  const menu = document.getElementById('nav-menu');
+  const isOpen = menu.style.display !== 'none';
+  menu.style.display = isOpen ? 'none' : '';
+}
+
+// Close menu on outside click
+document.addEventListener('click', e => {
+  const menu = document.getElementById('nav-menu');
+  const btn  = document.getElementById('menu-btn');
+  if (menu && !menu.contains(e.target) && e.target !== btn) {
+    menu.style.display = 'none';
+  }
+});
+
+// New cards per session fixed at 20 — no slider in v4
 
 // ═══════════════════════════════════════════
 //  PICKER
@@ -1435,6 +1464,9 @@ function renderCatGrid(animate) {
     const indices  = FOUNDATION.map((w, i) => w.cat === cat ? i : -1).filter(i => i >= 0);
     const total    = indices.length;
     const mastered = indices.filter(i => getBox(i) >= SRS_INTERVALS.length - 1).length;
+    const seen     = indices.filter(i => getEntry(i).seen).length;
+    const seenOnly = seen - mastered;  // seen but not yet mastered
+    const unseen   = total - seen;
 
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (selectedCats.has(cat) ? ' selected' : '');
@@ -1448,7 +1480,9 @@ function renderCatGrid(animate) {
     <div class="cat-btn-right">
       <div class="cat-pill cat-pill-green">${mastered}</div>
       <div class="cat-pill-divider"></div>
-      <div class="cat-pill cat-pill-red">${total - mastered}</div>
+      <div class="cat-pill cat-pill-orange">${seenOnly}</div>
+      <div class="cat-pill-divider"></div>
+      <div class="cat-pill cat-pill-red">${unseen}</div>
     </div>`;
     btn.onclick = () => toggleCat(cat);
     grid.appendChild(btn);
@@ -2037,20 +2071,7 @@ document.addEventListener('keydown', e => {
   document.getElementById('lang-en').classList.toggle('active', uiLang === 'en');
   document.getElementById('lang-th').classList.toggle('active', uiLang === 'th');
   applyStrings();
-  setDirection(direction);
-
-  // Restore difficulty buttons
-  ['all','beginner','intermediate','advanced'].forEach(id => {
-    document.getElementById('diff-' + id).classList.toggle('active', id === difficulty);
-  });
-  // Restore mode buttons
-  ['flashcard','typing','tone'].forEach(id => {
-    document.getElementById('mode-' + id).classList.toggle('active', id === studyMode);
-  });
-
-  const nc = settings.newCardsPerSession;
-  document.getElementById('new-cards-slider').value      = nc;
-  document.getElementById('new-cards-label').textContent = nc === 0 ? '∞' : nc;
+  updateCompactControls();
 
   showPicker();
 })();
