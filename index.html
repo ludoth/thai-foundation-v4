@@ -133,7 +133,7 @@
       letter-spacing: 0.09em; align-self: flex-start; font-weight: 700;
     }
 
-    .dir-row, .session-row { display: flex; gap: 8px; width: 100%; }
+    .dir-row, .diff-row, .mode-row { display: flex; gap: 8px; width: 100%; }
     .pill-btn {
       flex: 1; padding: 9px; border-radius: 10px; font-size: 0.85rem;
       font-weight: 600; border: 1.5px solid var(--border);
@@ -558,6 +558,51 @@
     .picker-divider {
       width: 100%; height: 1px; background: var(--border);
     }
+
+    /* Typing mode input */
+    .typing-row {
+      width: 100%; max-width: 480px; display: flex; gap: 8px; margin-top: 12px;
+    }
+    .typing-input {
+      flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; color: var(--text); font-family: inherit;
+      font-size: 1rem; font-weight: 600; padding: 14px 16px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .typing-input:focus { border-color: var(--accent); }
+    .typing-input.correct { border-color: var(--green); background: rgba(74,222,128,0.05); }
+    .typing-input.incorrect { border-color: var(--red); background: rgba(248,113,113,0.05); }
+    .typing-input::placeholder { color: var(--text-dim); }
+    .btn-check {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hi));
+      color: #0c0a08; border: none; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 700; padding: 14px 20px; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-check:hover { opacity: 0.9; }
+    .typing-feedback {
+      width: 100%; max-width: 480px; font-size: 0.85rem; font-weight: 600;
+      text-align: center; padding: 8px 0; min-height: 26px;
+    }
+    .typing-feedback.correct { color: var(--green); }
+    .typing-feedback.incorrect { color: var(--red); }
+
+    /* Tone quiz buttons */
+    .tone-quiz-row {
+      display: flex; gap: 6px; width: 100%; max-width: 480px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .btn-tone {
+      flex: 1; min-width: 70px; padding: 11px 8px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; cursor: pointer; font-family: inherit;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-tone:hover { border-color: var(--border-hi); }
+    .btn-tone.correct { border-color: var(--green); background: rgba(74,222,128,0.1); }
+    .btn-tone.incorrect { border-color: var(--red); background: rgba(248,113,113,0.1); }
+    .btn-tone-mark { font-size: 1.2rem; color: var(--accent-hi); font-weight: 700; }
+    .btn-tone-name { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -573,6 +618,7 @@
       <button class="lang-btn active" id="lang-en" onclick="setUILang('en')">EN</button>
       <button class="lang-btn"        id="lang-th" onclick="setUILang('th')">ไทย</button>
     </div>
+    <a href="stats.html"     class="top-link" data-i18n="linkStats">Stats</a>
     <a href="phonetics.html" class="top-link" data-i18n="linkPhonetics">Phonetics</a>
     <a href="how-to-use.html" class="top-link" data-i18n="linkHowTo">How to use</a>
   </div>
@@ -599,10 +645,19 @@
     <button class="pill-btn"        id="dir-thai-eng" onclick="setDirection('thai-eng')" data-i18n="dirThaiEng">Thai → Eng</button>
   </div>
 
-  <div class="picker-label" data-i18n="labelSessionSize">Session size</div>
-  <div class="session-row">
-    <button class="pill-btn active" id="size-quick" onclick="setSessionSize(20)" data-i18n="sizeQuick">Quick · 20</button>
-    <button class="pill-btn"        id="size-full"  onclick="setSessionSize(0)"  data-i18n="sizeFull">Full</button>
+  <div class="picker-label" data-i18n="labelDifficulty">Difficulty</div>
+  <div class="diff-row">
+    <button class="pill-btn active" id="diff-all"          onclick="setDifficulty('all')"          data-i18n="diffAll">All</button>
+    <button class="pill-btn"        id="diff-beginner"     onclick="setDifficulty('beginner')"     data-i18n="diffBeginner">Beginner</button>
+    <button class="pill-btn"        id="diff-intermediate" onclick="setDifficulty('intermediate')" data-i18n="diffIntermediate">Intermediate</button>
+    <button class="pill-btn"        id="diff-advanced"     onclick="setDifficulty('advanced')"     data-i18n="diffAdvanced">Advanced</button>
+  </div>
+
+  <div class="picker-label" data-i18n="labelMode">Study mode</div>
+  <div class="mode-row">
+    <button class="pill-btn active" id="mode-flashcard" onclick="setStudyMode('flashcard')" data-i18n="modeFlashcard">Flashcard</button>
+    <button class="pill-btn"        id="mode-typing"    onclick="setStudyMode('typing')"    data-i18n="modeTyping">Typing</button>
+    <button class="pill-btn"        id="mode-tone"      onclick="setStudyMode('tone')"      data-i18n="modeTone">Tone Quiz</button>
   </div>
 
   <div class="picker-label" data-i18n="labelNewCards">New cards per session</div>
@@ -704,6 +759,25 @@
     <button class="btn btn-got-it" onclick="answer(true)"><span data-i18n="btnGotIt">✓ Got it</span> <kbd>→</kbd></button>
   </div>
 
+  <!-- Typing mode row -->
+  <div class="typing-row" id="typing-row" style="display:none">
+    <input class="typing-input" id="typing-input" type="text"
+           placeholder="Type phonetic (e.g. sa-wàd-dee)"
+           oninput="this.classList.remove('correct','incorrect')"
+           onkeydown="if(event.key==='Enter')checkTyping()">
+    <button class="btn-check" onclick="checkTyping()" data-i18n="btnCheck">Check</button>
+  </div>
+  <div class="typing-feedback" id="typing-feedback"></div>
+
+  <!-- Tone quiz row -->
+  <div class="tone-quiz-row" id="tone-quiz-row" style="display:none">
+    <button class="btn-tone" id="tone-mid"     onclick="checkTone('mid')">     <span class="btn-tone-mark">a</span> <span class="btn-tone-name" data-i18n="toneMid">Mid</span>    </button>
+    <button class="btn-tone" id="tone-low"     onclick="checkTone('low')">     <span class="btn-tone-mark">à</span> <span class="btn-tone-name" data-i18n="toneLow">Low</span>    </button>
+    <button class="btn-tone" id="tone-falling" onclick="checkTone('falling')"> <span class="btn-tone-mark">â</span> <span class="btn-tone-name" data-i18n="toneFalling">Falling</span> </button>
+    <button class="btn-tone" id="tone-high"    onclick="checkTone('high')">    <span class="btn-tone-mark">á</span> <span class="btn-tone-name" data-i18n="toneHigh">High</span>   </button>
+    <button class="btn-tone" id="tone-rising"  onclick="checkTone('rising')">  <span class="btn-tone-mark">ǎ</span> <span class="btn-tone-name" data-i18n="toneRising">Rising</span> </button>
+  </div>
+
   <!-- Session stats -->
   <div class="session-stats">
     <div><span data-i18n="statAnswered">Answered:</span> <span id="stat-session">0</span></div>
@@ -760,16 +834,29 @@ const STRINGS = {
     labelDirection:      'Direction',
     dirEngThai:          'Eng → Thai',
     dirThaiEng:          'Thai → Eng',
-    labelSessionSize:    'Session size',
-    sizeQuick:           'Quick · 20',
-    sizeFull:            'Full',
+    labelDifficulty:     'Difficulty',
+    diffAll:             'All',
+    diffBeginner:        'Beginner',
+    diffIntermediate:    'Intermediate',
+    diffAdvanced:        'Advanced',
+    labelMode:           'Study mode',
+    modeFlashcard:       'Flashcard',
+    modeTyping:          'Typing',
+    modeTone:            'Tone Quiz',
     labelNewCards:       'New cards per session',
     labelCategories:     'Categories',
     selectAll:           'select all',
     tooltipStart:        'Select at least one category',
     btnStart:            'Start studying',
+    linkStats:           'Stats',
     linkPhonetics:       'Phonetics',
     linkHowTo:           'How to use',
+    btnCheck:            'Check',
+    toneMid:             'Mid',
+    toneLow:             'Low',
+    toneFalling:         'Falling',
+    toneHigh:            'High',
+    toneRising:          'Rising',
     statSeen:            'Seen',
     statMastered:        'Mastered',
     hintFront:           'tap to flip',
@@ -810,7 +897,8 @@ const STRINGS = {
       colors: 'Colors', food: 'Food & Drinks', body: 'Body',
       health: 'Health', home: 'Home', work: 'Work',
       clothing: 'Clothing', directions: 'Directions', months: 'Months',
-      nature: 'Nature', weather: 'Weather', alphabet: 'Alphabet', random: 'Random',
+      nature: 'Nature', weather: 'Weather', alphabet: 'Alphabet',
+      sentences: 'Sentences', random: 'Random',
     },
   },
   th: {
@@ -818,16 +906,29 @@ const STRINGS = {
     labelDirection:      'ทิศทาง',
     dirEngThai:          'อังกฤษ → ไทย',
     dirThaiEng:          'ไทย → อังกฤษ',
-    labelSessionSize:    'จำนวนบัตร',
-    sizeQuick:           'เร็ว · 20',
-    sizeFull:            'ทั้งหมด',
+    labelDifficulty:     'ระดับ',
+    diffAll:             'ทั้งหมด',
+    diffBeginner:        'เริ่มต้น',
+    diffIntermediate:    'กลาง',
+    diffAdvanced:        'สูง',
+    labelMode:           'รูปแบบ',
+    modeFlashcard:       'บัตรคำ',
+    modeTyping:          'พิมพ์',
+    modeTone:            'เสียงวรรณยุกต์',
     labelNewCards:       'บัตรใหม่ต่อครั้ง',
     labelCategories:     'หมวดหมู่',
     selectAll:           'เลือกทั้งหมด',
     tooltipStart:        'เลือกอย่างน้อยหนึ่งหมวดหมู่',
     btnStart:            'เริ่มเรียน',
+    linkStats:           'สถิติ',
     linkPhonetics:       'สัทศาสตร์',
     linkHowTo:           'วิธีใช้',
+    btnCheck:            'ตรวจ',
+    toneMid:             'กลาง',
+    toneLow:             'ต่ำ',
+    toneFalling:         'โท',
+    toneHigh:            'สูง',
+    toneRising:          'ตรี',
     statSeen:            'เห็นแล้ว',
     statMastered:        'เชี่ยวชาญ',
     hintFront:           'แตะเพื่อพลิก',
@@ -868,7 +969,8 @@ const STRINGS = {
       colors: 'สี', food: 'อาหาร', body: 'ร่างกาย',
       health: 'สุขภาพ', home: 'บ้าน', work: 'งาน',
       clothing: 'เสื้อผ้า', directions: 'ทิศทาง', months: 'เดือน',
-      nature: 'ธรรมชาติ', weather: 'อากาศ', alphabet: 'อักษร', random: 'สุ่ม',
+      nature: 'ธรรมชาติ', weather: 'อากาศ', alphabet: 'อักษร',
+      sentences: 'ประโยค', random: 'สุ่ม',
     },
   },
 };
@@ -956,7 +1058,17 @@ const CAT_CONFIG = {
   nature:     { emoji:'🌿', color:'#84cc16', label:'Nature' },
   weather:    { emoji:'⛅', color:'#60a5fa', label:'Weather' },
   alphabet:   { emoji:'🔤', color:'#a855f7', label:'Alphabet' },
+  sentences:  { emoji:'💬', color:'#06b6d4', label:'Sentences' },
   random:     { emoji:'🎲', color:'#f59e0b', label:'Random' },
+};
+
+// ═══════════════════════════════════════════
+//  DIFFICULTY MAP
+// ═══════════════════════════════════════════
+const DIFFICULTY_MAP = {
+  beginner:     ['greetings','numbers','pronouns','colors','days','family','sentences'],
+  intermediate: ['verbs','nouns','adjectives','food','body','transport','questions','places','time','shopping','emotions'],
+  advanced:     ['grammar','patterns','quantifiers','health','work','home','clothing','directions','months','nature','weather','animals','alphabet'],
 };
 
 // ═══════════════════════════════════════════
@@ -974,7 +1086,9 @@ let streak       = 0;
 let lastDate     = '';
 let direction    = 'eng-thai';
 let suspended    = {};
-let settings     = { newCardsPerSession: 10, sessionSize: 20 };
+let difficulty   = 'all';
+let studyMode    = 'flashcard';
+let settings     = { newCardsPerSession: 10 };
 
 // ═══════════════════════════════════════════
 //  SESSION STATE
@@ -1006,9 +1120,11 @@ function promoteCard(idx, correct) {
   const d = getEntry(idx);
   const newBox = correct ? Math.min(d.box + 1, SRS_INTERVALS.length - 1) : 0;
   srsData[cardKey(idx)] = {
-    box:  newBox,
-    next: sessionCount + SRS_INTERVALS[newBox],
-    seen: d.seen || correct,
+    box:   newBox,
+    next:  sessionCount + SRS_INTERVALS[newBox],
+    seen:  d.seen || correct,
+    hits:  (d.hits  || 0) + (correct ? 1 : 0),
+    misses:(d.misses|| 0) + (correct ? 0 : 1),
   };
   localStorage.setItem('tf_srs', JSON.stringify(srsData));
 }
@@ -1060,12 +1176,29 @@ function setDirection(d) {
   document.getElementById('dir-eng-thai').classList.toggle('active', d === 'eng-thai');
   document.getElementById('dir-thai-eng').classList.toggle('active', d === 'thai-eng');
 }
-function setSessionSize(n) {
-  settings.sessionSize = n;
-  saveSettings();
-  document.getElementById('size-quick').classList.toggle('active', n === 20);
-  document.getElementById('size-full').classList.toggle('active',  n === 0);
+function setDifficulty(d) {
+  difficulty = d;
+  localStorage.setItem('tf_difficulty', d);
+  ['all','beginner','intermediate','advanced'].forEach(id => {
+    document.getElementById('diff-' + id).classList.toggle('active', id === d);
+  });
+  if (d !== 'all') {
+    selectedCats.clear();
+    DIFFICULTY_MAP[d].forEach(c => {
+      if (FOUNDATION.some(w => w.cat === c)) selectedCats.add(c);
+    });
+    renderCatGrid(false);
+  }
 }
+
+function setStudyMode(m) {
+  studyMode = m;
+  localStorage.setItem('tf_mode', m);
+  ['flashcard','typing','tone'].forEach(id => {
+    document.getElementById('mode-' + id).classList.toggle('active', id === m);
+  });
+}
+
 function setNewCards(v) {
   settings.newCardsPerSession = parseInt(v);
   saveSettings();
@@ -1199,8 +1332,7 @@ function interleave(reviews, newCards) {
 }
 
 function buildQueue() {
-  const newLimit  = settings.newCardsPerSession === 0 ? Infinity : settings.newCardsPerSession;
-  const sizeLimit = settings.sessionSize || Infinity;
+  const newLimit = settings.newCardsPerSession === 0 ? Infinity : settings.newCardsPerSession;
 
   const included  = new Set();
   const dueReview = [], dueNew = [];
@@ -1224,8 +1356,7 @@ function buildQueue() {
   shuffle(dueReview);
   shuffle(dueNew);
 
-  const merged = interleave(dueReview, dueNew.slice(0, newLimit));
-  return sizeLimit < Infinity ? merged.slice(0, sizeLimit) : merged;
+  return interleave(dueReview, dueNew.slice(0, newLimit));
 }
 
 // ═══════════════════════════════════════════
@@ -1273,8 +1404,7 @@ function nextCard() {
   renderCard(current);
   updateStudyHeader();
   updateSessionStats();
-  document.getElementById('btn-reveal-row').style.display = '';
-  document.getElementById('btn-row').style.display        = 'none';
+  setupModeUI();
 }
 
 // ═══════════════════════════════════════════
@@ -1353,6 +1483,107 @@ function updateSessionStats() {
   document.getElementById('stat-deck').textContent    = queue.length;
 }
 
+function setupModeUI() {
+  const isFlash   = studyMode === 'flashcard';
+  const isTyping  = studyMode === 'typing';
+  const isTone    = studyMode === 'tone';
+
+  document.getElementById('btn-reveal-row').style.display  = isFlash ? '' : 'none';
+  document.getElementById('btn-row').style.display         = 'none';
+  document.getElementById('typing-row').style.display      = isTyping ? '' : 'none';
+  document.getElementById('typing-feedback').style.display = isTyping ? '' : 'none';
+  document.getElementById('tone-quiz-row').style.display   = isTone  ? '' : 'none';
+
+  if (isTyping) {
+    const inp = document.getElementById('typing-input');
+    inp.value = '';
+    inp.className = 'typing-input';
+    document.getElementById('typing-feedback').textContent = '';
+    document.getElementById('typing-feedback').className   = 'typing-feedback';
+    // Auto-focus on desktop
+    if (window.matchMedia('(hover: hover)').matches) inp.focus();
+  }
+
+  if (isTone) {
+    // Reset tone buttons
+    ['mid','low','falling','high','rising'].forEach(t =>
+      document.getElementById('tone-' + t).className = 'btn-tone'
+    );
+    // Make card scene non-interactive in tone mode
+    document.getElementById('card-scene').style.pointerEvents = 'none';
+  } else {
+    document.getElementById('card-scene').style.pointerEvents = '';
+  }
+}
+
+// ── Typing mode ──
+function stripTones(s) {
+  // Remove diacritics: grave, circumflex, acute, caron, combining marks
+  return s.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')  // strip combining diacriticals
+    .replace(/ǎ|ě|ǐ|ǒ|ǔ/gi, m => ({ǎ:'a',ě:'e',ǐ:'i',ǒ:'o',ǔ:'u',Ǎ:'a',Ě:'e',Ǐ:'i',Ǒ:'o',Ǔ:'u'}[m] || m))
+    .toLowerCase().trim();
+}
+
+function compareAnswer(input, correct) {
+  return stripTones(input) === stripTones(correct);
+}
+
+function checkTyping() {
+  if (!current) return;
+  const inp    = document.getElementById('typing-input');
+  const fb     = document.getElementById('typing-feedback');
+  const answer = inp.value.trim();
+  if (!answer) return;
+
+  // In eng-thai mode: answer should be the phonetic (th)
+  // In thai-eng mode: answer should be the English (en)
+  const correct = direction === 'eng-thai' ? current.w.th : current.w.en;
+  const isRight = compareAnswer(answer, correct);
+
+  inp.className = 'typing-input ' + (isRight ? 'correct' : 'incorrect');
+  fb.className  = 'typing-feedback ' + (isRight ? 'correct' : 'incorrect');
+  fb.textContent = isRight
+    ? '✓ Correct!'
+    : `✗ Answer: ${correct}`;
+
+  // Auto-advance after a moment
+  setTimeout(() => answer_internal(isRight), isRight ? 800 : 1600);
+}
+
+// ── Tone Quiz ──
+function extractTone(th) {
+  for (const ch of th) {
+    if (/[àèìòùÀÈÌÒÙ]/.test(ch)) return 'low';
+    if (/[âêîôûÂÊÎÔÛ]/.test(ch)) return 'falling';
+    if (/[áéíóúÁÉÍÓÚ]/.test(ch)) return 'high';
+    if (/[ǎěǐǒǔǍĚǏǑǓ]/.test(ch)) return 'rising';
+  }
+  return 'mid';
+}
+
+function checkTone(guessed) {
+  if (!current) return;
+  const correct = extractTone(current.w.th);
+  const isRight = guessed === correct;
+
+  // Highlight buttons
+  document.getElementById('tone-' + guessed).className = 'btn-tone ' + (isRight ? 'correct' : 'incorrect');
+  if (!isRight) document.getElementById('tone-' + correct).className = 'btn-tone correct';
+
+  // Disable all tone buttons
+  ['mid','low','falling','high','rising'].forEach(t => {
+    document.getElementById('tone-' + t).disabled = true;
+  });
+
+  setTimeout(() => {
+    ['mid','low','falling','high','rising'].forEach(t => {
+      document.getElementById('tone-' + t).disabled = false;
+    });
+    answer_internal(isRight);
+  }, isRight ? 700 : 1400);
+}
+
 // ═══════════════════════════════════════════
 //  CARD INTERACTION
 // ═══════════════════════════════════════════
@@ -1368,24 +1599,13 @@ function revealCard() {
   const fc = document.getElementById('flip-card');
   fc.classList.add('flipped');
   fc.classList.remove('just-revealed');
-  // Trigger glow after flip animation completes (~420ms)
   setTimeout(() => fc.classList.add('just-revealed'), 380);
   document.getElementById('btn-reveal-row').style.display = 'none';
   document.getElementById('btn-row').style.display        = '';
 }
 
-function answer(correct) {
-  if (!revealed) return;
-
-  // Button flash feedback
-  const btn = document.getElementById(correct ? 'btn-got-it' : 'btn-again');
-  if (btn) {
-    btn.classList.remove('flash');
-    void btn.offsetWidth;
-    btn.classList.add('flash');
-    setTimeout(() => btn.classList.remove('flash'), 350);
-  }
-
+// Shared answer logic for all modes
+function answer_internal(correct) {
   undoSnapshot = {
     srsData:        JSON.parse(JSON.stringify(srsData)),
     sessionCorrect,
@@ -1405,14 +1625,27 @@ function answer(correct) {
   } else {
     const key = current.i;
     againCount[key] = (againCount[key] || 0) + 1;
-    if (againCount[key] <= MAX_REQUEUE) {
-      queue.push(current);
-    }
+    if (againCount[key] <= MAX_REQUEUE) queue.push(current);
   }
 
   sessionTotal++;
   updateProgress();
   nextCard();
+}
+
+function answer(correct) {
+  if (!revealed) return;
+
+  // Button flash feedback (flashcard mode only)
+  const btn = document.getElementById(correct ? 'btn-got-it' : 'btn-again');
+  if (btn) {
+    btn.classList.remove('flash');
+    void btn.offsetWidth;
+    btn.classList.add('flash');
+    setTimeout(() => btn.classList.remove('flash'), 350);
+  }
+
+  answer_internal(correct);
 }
 
 function skipCard() {
@@ -1461,8 +1694,7 @@ function undoLast() {
   renderCard(current);
   updateStudyHeader();
   updateSessionStats();
-  document.getElementById('btn-reveal-row').style.display = '';
-  document.getElementById('btn-row').style.display        = 'none';
+  setupModeUI();
   updateProgress();
 }
 
@@ -1603,6 +1835,8 @@ document.addEventListener('keydown', e => {
   direction    =          localStorage.getItem('tf_direction')        || 'eng-thai';
   suspended    = JSON.parse(localStorage.getItem('tf_suspended')      || '{}');
   uiLang       =          localStorage.getItem('tf_ui_lang')          || 'en';
+  difficulty   =          localStorage.getItem('tf_difficulty')       || 'all';
+  studyMode    =          localStorage.getItem('tf_mode')             || 'flashcard';
   loadSettings();
 
   document.getElementById('streak-pill').textContent = '🔥 ' + streak;
@@ -1611,11 +1845,15 @@ document.addEventListener('keydown', e => {
   applyStrings();
   setDirection(direction);
 
-  // Normalise: any non-zero legacy size (e.g. 10) becomes 20
-  if (settings.sessionSize !== 0) { settings.sessionSize = 20; saveSettings(); }
-  const sz = settings.sessionSize;
-  document.getElementById('size-quick').classList.toggle('active', sz !== 0);
-  document.getElementById('size-full').classList.toggle('active',  sz === 0);
+  // Restore difficulty buttons
+  ['all','beginner','intermediate','advanced'].forEach(id => {
+    document.getElementById('diff-' + id).classList.toggle('active', id === difficulty);
+  });
+  // Restore mode buttons
+  ['flashcard','typing','tone'].forEach(id => {
+    document.getElementById('mode-' + id).classList.toggle('active', id === studyMode);
+  });
+
   const nc = settings.newCardsPerSession;
   document.getElementById('new-cards-slider').value      = nc;
   document.getElementById('new-cards-label').textContent = nc === 0 ? '∞' : nc;

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats · Thai Foundation</title>
+  <script src="foundation.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #100f0d;
+      --surface:    #1c1a16;
+      --surface-up: #252118;
+      --border:     #3a3020;
+      --border-hi:  #5a4a30;
+      --accent:     #d97706;
+      --accent-hi:  #f59e0b;
+      --accent-bg:  #1f1700;
+      --accent-bdr: #5a3e00;
+      --text:       #f0e8d8;
+      --text-muted: #8a7a68;
+      --text-dim:   #4a3a28;
+      --green:      #4ade80;
+      --green-dim:  #166534;
+      --red:        #f87171;
+      --mastered:   #fbbf24;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 100%, rgba(217,119,6,0.06) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 90% 5%,  rgba(245,158,11,0.04) 0%, transparent 60%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 20px 60px;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .top-bar {
+      width: 100%; max-width: 600px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      font-size: 0.82rem; color: var(--text-muted); text-decoration: none;
+      border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border-hi); }
+
+    h1 { font-size: 1.5rem; font-weight: 800; color: var(--text); }
+    .subtitle { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* ── Summary row ── */
+    .summary-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; width: 100%; max-width: 600px; margin-bottom: 18px;
+    }
+    @media (max-width: 480px) { .summary-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .summary-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 12px; text-align: center;
+    }
+    .summary-val {
+      font-size: 1.8rem; font-weight: 800; color: var(--accent-hi);
+      line-height: 1.1; display: block;
+    }
+    .summary-val.green  { color: var(--green); }
+    .summary-val.red    { color: var(--red); }
+    .summary-val.gold   { color: var(--mastered); }
+    .summary-label {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; display: block; margin-top: 4px;
+    }
+
+    /* ── Section ── */
+    .section {
+      width: 100%; max-width: 600px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.09em; color: var(--text-muted); margin-bottom: 16px;
+    }
+
+    /* SRS distribution */
+    .srs-bars {
+      display: flex; gap: 6px; align-items: flex-end; height: 80px;
+    }
+    .srs-bar-wrap {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+    .srs-bar-outer {
+      width: 100%; background: var(--bg); border-radius: 6px;
+      overflow: hidden; height: 60px; display: flex; align-items: flex-end;
+    }
+    .srs-bar-fill {
+      width: 100%; background: var(--accent);
+      border-radius: 6px 6px 0 0; transition: height 0.5s ease;
+    }
+    .srs-bar-label {
+      font-size: 0.62rem; font-weight: 700; color: var(--text-muted);
+      text-align: center;
+    }
+    .srs-bar-count {
+      font-size: 0.7rem; font-weight: 800; color: var(--accent-hi);
+    }
+
+    /* Category table */
+    .cat-table { width: 100%; border-collapse: collapse; }
+    .cat-table th {
+      text-align: left; font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-dim); padding: 0 6px 10px;
+    }
+    .cat-table th:not(:first-child) { text-align: right; }
+    .cat-table td {
+      padding: 6px 6px; font-size: 0.82rem;
+      border-bottom: 1px solid var(--bg); vertical-align: middle;
+    }
+    .cat-table tr:last-child td { border-bottom: none; }
+    .cat-name-cell { display: flex; align-items: center; gap: 7px; }
+    .cat-emoji-sm  { font-size: 0.85rem; }
+    .cat-label-sm  { color: var(--text); font-weight: 600; }
+    .cat-table td:not(:first-child) { text-align: right; }
+    .td-mastered { color: var(--mastered); font-weight: 700; }
+    .td-seen     { color: var(--text-muted); }
+    .td-total    { color: var(--text-dim); }
+
+    /* Mini progress bar in table */
+    .mini-bar {
+      height: 4px; background: var(--bg); border-radius: 99px;
+      overflow: hidden; min-width: 60px;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--mastered));
+      border-radius: 99px;
+    }
+
+    /* Weakest cards */
+    .weak-list { display: flex; flex-direction: column; gap: 8px; }
+    .weak-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .weak-word { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .weak-th   { font-size: 0.82rem; color: var(--accent); margin-top: 2px; }
+    .weak-miss { font-size: 0.75rem; font-weight: 700; color: var(--red); white-space: nowrap; }
+    .weak-empty { font-size: 0.82rem; color: var(--text-dim); text-align: center; padding: 12px 0; }
+
+    .made-by { margin-top: 32px; font-size: 0.68rem; color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html" id="nav-back">← Back</a>
+  <span style="font-size:0.78rem;color:var(--text-muted)" id="session-label"></span>
+</div>
+
+<h1>📊 Stats</h1>
+<p class="subtitle" id="subtitle-text">Your learning progress</p>
+
+<!-- Summary cards -->
+<div class="summary-row">
+  <div class="summary-card">
+    <span class="summary-val" id="s-total">—</span>
+    <span class="summary-label">Total Cards</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-val green" id="s-seen">—</span>
+    <span class="summary-label">Seen</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-val gold" id="s-mastered">—</span>
+    <span class="summary-label">Mastered</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-val" id="s-streak">—</span>
+    <span class="summary-label">Day Streak 🔥</span>
+  </div>
+</div>
+
+<!-- SRS Box distribution -->
+<div class="section">
+  <div class="section-title">SRS Box Distribution</div>
+  <div class="srs-bars" id="srs-bars"></div>
+</div>
+
+<!-- Category breakdown -->
+<div class="section">
+  <div class="section-title">By Category</div>
+  <table class="cat-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Mastered</th>
+        <th>Seen</th>
+        <th>Total</th>
+        <th style="min-width:70px">Progress</th>
+      </tr>
+    </thead>
+    <tbody id="cat-breakdown"></tbody>
+  </table>
+</div>
+
+<!-- Weakest cards -->
+<div class="section">
+  <div class="section-title">Cards to review (most misses)</div>
+  <div class="weak-list" id="weak-list"></div>
+</div>
+
+<div class="made-by">✦ Thai Foundation v3</div>
+
+<script>
+const SRS_INTERVALS = [0, 1, 2, 4, 8, 16];
+
+const CAT_CONFIG = {
+  numbers:'🔢', pronouns:'👤', verbs:'🏃', days:'📅', greetings:'🙏', nouns:'📦',
+  adjectives:'⭐', places:'📍', patterns:'💬', quantifiers:'🔣', shopping:'🛒',
+  time:'⏰', questions:'❓', grammar:'📚', family:'👨‍👩‍👧', emotions:'😊',
+  transport:'🚗', animals:'🐘', colors:'🎨', food:'🍜', body:'💪', health:'💊',
+  home:'🏠', work:'💼', clothing:'👕', directions:'🧭', months:'🗓️',
+  nature:'🌿', weather:'⛅', alphabet:'🔤', sentences:'💬', random:'🎲',
+};
+
+function cardKey(idx) { return 'c' + idx; }
+function getEntry(idx) {
+  const d = srsData[cardKey(idx)];
+  return d || { box: 0, next: 0, seen: false, hits: 0, misses: 0 };
+}
+
+// Load data
+const srsData    = JSON.parse(localStorage.getItem('tf_srs')         || '{}');
+const streak     = parseInt(localStorage.getItem('tf_streak')        || '0');
+const sessions   = parseInt(localStorage.getItem('tf_session_count') || '0');
+
+const total      = FOUNDATION.length;
+const seenCards  = FOUNDATION.filter((_, i) => getEntry(i).seen);
+const masteredCards = FOUNDATION.filter((_, i) => getEntry(i).box >= SRS_INTERVALS.length - 1);
+
+document.getElementById('s-total').textContent    = total;
+document.getElementById('s-seen').textContent     = seenCards.length;
+document.getElementById('s-mastered').textContent = masteredCards.length;
+document.getElementById('s-streak').textContent   = streak;
+document.getElementById('session-label').textContent = sessions + ' session' + (sessions !== 1 ? 's' : '');
+
+// ── SRS Bar chart ──
+const boxCounts = Array(SRS_INTERVALS.length).fill(0);
+FOUNDATION.forEach((_, i) => {
+  const e = getEntry(i);
+  if (e.seen || e.box > 0) boxCounts[e.box]++;
+});
+const maxCount = Math.max(...boxCounts, 1);
+const barsEl = document.getElementById('srs-bars');
+const boxLabels = ['New/0', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Mastered'];
+const boxColors = ['#3a3020','#d97706','#f59e0b','#fbbf24','#86efac','#4ade80'];
+boxCounts.forEach((count, i) => {
+  const pct = (count / maxCount * 100).toFixed(1);
+  const wrap = document.createElement('div');
+  wrap.className = 'srs-bar-wrap';
+  wrap.innerHTML = `
+    <div class="srs-bar-count">${count}</div>
+    <div class="srs-bar-outer">
+      <div class="srs-bar-fill" style="height:${pct}%;background:${boxColors[i]}"></div>
+    </div>
+    <div class="srs-bar-label">${boxLabels[i]}</div>
+  `;
+  barsEl.appendChild(wrap);
+});
+
+// ── Category breakdown ──
+const tbody   = document.getElementById('cat-breakdown');
+const CATS    = [...new Set(FOUNDATION.map(w => w.cat))].sort();
+
+CATS.forEach(cat => {
+  const indices  = FOUNDATION.map((w, i) => w.cat === cat ? i : -1).filter(i => i >= 0);
+  const catTotal = indices.length;
+  const catSeen  = indices.filter(i => getEntry(i).seen).length;
+  const catMast  = indices.filter(i => getEntry(i).box >= SRS_INTERVALS.length - 1).length;
+  const pct      = catTotal ? Math.round(catMast / catTotal * 100) : 0;
+  const emoji    = CAT_CONFIG[cat] || '📝';
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <div class="cat-name-cell">
+        <span class="cat-emoji-sm">${emoji}</span>
+        <span class="cat-label-sm">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+      </div>
+    </td>
+    <td class="td-mastered">${catMast}</td>
+    <td class="td-seen">${catSeen}</td>
+    <td class="td-total">${catTotal}</td>
+    <td>
+      <div class="mini-bar">
+        <div class="mini-bar-fill" style="width:${pct}%"></div>
+      </div>
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ── Weakest cards ──
+const weakEl   = document.getElementById('weak-list');
+const withData = FOUNDATION.map((w, i) => ({ w, e: getEntry(i) }))
+  .filter(x => x.e.misses > 0)
+  .sort((a, b) => b.e.misses - a.e.misses)
+  .slice(0, 10);
+
+if (!withData.length) {
+  weakEl.innerHTML = '<div class="weak-empty">No mistakes recorded yet. Keep studying!</div>';
+} else {
+  withData.forEach(({ w, e }) => {
+    const div = document.createElement('div');
+    div.className = 'weak-card';
+    div.innerHTML = `
+      <div>
+        <div class="weak-word">${w.en}</div>
+        <div class="weak-th">${w.th}${w.script ? ' · ' + w.script : ''}</div>
+      </div>
+      <div class="weak-miss">✗ ${e.misses} miss${e.misses !== 1 ? 'es' : ''}</div>
+    `;
+    weakEl.appendChild(div);
+  });
+}
+
+// Lang nav
+const _l = localStorage.getItem('tf_ui_lang') || 'en';
+if (_l === 'th') document.getElementById('nav-back').textContent = '← กลับ';
+</script>
+</body>
+</html>
