@@ -1085,6 +1085,182 @@ const DIFFICULTY_MAP = {
 };
 
 // ═══════════════════════════════════════════
+//  ENGLISH PHONETIC GUIDE (for Thai→Eng mode)
+//  Simplified respelling: stressed syllable in CAPS
+// ═══════════════════════════════════════════
+const EN_PHON = {
+  // Numbers
+  '0':'ZEE-roh','1':'WUN','2':'TOO','3':'THREE','4':'FOR','5':'FIYV',
+  '6':'SIX','7':'SEV-en','8':'AYT','9':'NIYN','10':'TEN',
+  '11':'ih-LEV-en','12':'TWELV','13':'THUR-teen','14':'FOR-teen',
+  '15':'FIF-teen','16':'SIX-teen','17':'SEV-en-teen','18':'AY-teen',
+  '19':'NIYN-teen','20':'TWEN-tee','21':'twen-tee-WUN','30':'THUR-tee',
+  '40':'FOR-tee','50':'FIF-tee','60':'SIX-tee','70':'SEV-en-tee',
+  '80':'AY-tee','90':'NIYN-tee','100':'WUN HUN-dred','1000':'WUN THOW-zend',
+  // Pronouns
+  'I (masculine)':'EYE','I (feminine)':'EYE','you':'YOO',
+  'he / she / it':'HEE / SHEE / IT','we / us':'WEE / US',
+  'they / them':'THAY / THEM','man':'MAN',
+  // Greetings
+  'Hello / Goodbye':'heh-LOH / good-BYE',
+  'Good night':'good NIYT',
+  'How are you?':'HOW ar YOO?',
+  "I'm fine, thank you.":"IYM fiyn, THANGK yoo",
+  'Thank you':'THANGK yoo','Thank you very much':'THANGK yoo VEH-ree much',
+  "You're welcome":"YOR wel-kum",
+  'Sorry / Excuse me':'SAH-ree / ik-SKYOOZ mee',
+  'Yes':'YES','No':'NOH','Please':'PLEEZ','No problem':'NOH PRAH-blem',
+  'Of course':'uv KORS','Sure':'SHOOR',
+  'Nice to meet you':'NIYS tuh MEET yoo',
+  'See you later':'SEE yoo LAY-ter',
+  'Good morning':'good MOR-ning','Good afternoon':'good af-ter-NOON',
+  'Good evening':'good EEV-ning',
+  // Verbs
+  'eat':'EET','drink':'DRINK','go':'GOH','come':'KUM',
+  'want':'WONT','like':'LIYK','love':'LUV','know':'NOH',
+  'speak':'SPEEK','talk':'TAWK','say':'SAY','tell':'TEL',
+  'understand':'un-der-STAND','think':'THINGK','see':'SEE','hear':'HEER',
+  'work':'WURK','study':'STUD-ee','learn':'LURN','teach':'TEECH',
+  'buy':'BIY','sell':'SEL','pay':'PAY','give':'GIV','take':'TAYK',
+  'have':'HAV','do':'DOO','get':'GET','make':'MAYK','use':'YOOZ',
+  'need':'NEED','try':'TRIY','help':'HELP','wait':'WAYT',
+  'call':'KAWL','ask':'ASK','answer':'AN-ser',
+  'sit':'SIT','stand':'STAND','walk':'WAWK','run':'RUN',
+  'sleep':'SLEEP','wake up':'WAYK UP','open':'OH-pen','close':'KLOHZ',
+  'write':'RIYT','read':'REED',
+  'return':'reh-TURN','arrive':'ah-RIYV','leave':'LEEV',
+  'meet':'MEET','ride':'RIYD','drive':'DRIYV',
+  'not':'NOT','can':'KAN','can\'t':'KANT',
+  'be able to':'bee AY-bul too','want to':'WONT too',
+  'have to':'HAV too','must':'MUST',
+  // Nouns
+  'person / people':'PUR-sun / PEE-pul','man / male':'MAN / MAYL',
+  'woman / female':'WUM-en / FEE-mayl','child / children':'CHIYLD / CHIL-dren',
+  'friend':'FREND','family':'FAM-ih-lee',
+  'name':'NAYM','house':'HOWS','home':'HOHM','room':'ROOM',
+  'car':'KAR','road / street':'ROHD / STREET','market':'MAR-kit',
+  'shop':'SHOP','hospital':'HAHS-pi-tul','school':'SKOOL',
+  'money':'MUN-ee','price':'PRIYS','time':'TIYM',
+  'day':'DAY','night':'NIYT','morning':'MOR-ning',
+  'afternoon':'af-ter-NOON','evening':'EEV-ning',
+  'today':'tuh-DAY','tomorrow':'tuh-MAR-oh','yesterday':'YES-ter-day',
+  'year':'YEER','month':'MUNTH','week':'WEEK','hour':'OW-er',
+  'minute':'MIN-it',
+  // Colors
+  'red':'RED','blue':'BLOO','green':'GREEN','yellow':'YEL-oh',
+  'black':'BLAK','white':'WIYT','orange':'OR-inj','pink':'PINK',
+  'purple':'PUR-pul','brown':'BROWN','grey / gray':'GRAY',
+  // Days & Time
+  'Monday':'MUN-day','Tuesday':'TOOZ-day','Wednesday':'WENZ-day',
+  'Thursday':'THURZ-day','Friday':'FRY-day','Saturday':'SAT-ur-day',
+  'Sunday':'SUN-day','today':'tuh-DAY','tomorrow':'tuh-MAR-oh',
+  'yesterday':'YES-ter-day','now':'NOW','later':'LAY-ter',
+  'early':'UR-lee','late':'LAYT',
+  // Food
+  'water':'WAW-ter','rice':'RIYS','noodles':'NOO-dulz',
+  'chicken':'CHIK-en','pork':'PORK','beef':'BEEF','fish':'FISH',
+  'vegetables':'VEJ-tuh-bulz','fruit':'FROOT','egg':'EG',
+  'bread':'BRED','coffee':'KAW-fee','tea':'TEE','beer':'BEER',
+  'juice':'JOOS','milk':'MILK','sugar':'SHOOD-er','salt':'SAWLT',
+  'spicy':'SPIY-see','sweet':'SWEET','sour':'SOW-er','bitter':'BIT-er',
+  'delicious':'deh-LISH-us','food':'FOOD',
+  'Food & Drinks':'FOOD and DRINKS',
+  // Body
+  'head':'HED','hair':'HAYR','face':'FAYS','eye / eyes':'EYE / IYZE',
+  'ear / ears':'EER / EERZ','nose':'NOHZ','mouth':'MOWTH',
+  'tooth / teeth':'TOOTH / TEETH','neck':'NEK','shoulder':'SHOHL-der',
+  'arm':'ARM','hand':'HAND','finger / fingers':'FING-ger / FING-gerz',
+  'chest':'CHEST','stomach':'STUM-uk','back':'BAK',
+  'leg':'LEG','knee':'NEE','foot / feet':'FOOT / FEET',
+  // Family
+  'father':'FAH-ther','mother':'MUTH-er','parents':'PAYR-ents',
+  'older brother':'OHL-der BRUTH-er','younger brother':'YUNG-ger BRUTH-er',
+  'older sister':'OHL-der SIS-ter','younger sister':'YUNG-ger SIS-ter',
+  'husband':'HUZ-bend','wife':'WIYF','son':'SUN','daughter':'DAW-ter',
+  'grandfather':'GRAND-fah-ther','grandmother':'GRAND-muth-er',
+  'uncle':'UNG-kul','aunt':'ANT','cousin':'KUZ-en',
+  // Adjectives
+  'big / large':'BIG / LARJ','small / little':'SMAWL / LIT-ul',
+  'long':'LAWNG','short':'SHORT','tall':'TAWL',
+  'heavy':'HEV-ee','light':'LIYT','fast / quick':'FAST / KWIK',
+  'slow':'SLOH','hot':'HOT','cold':'KOHLD','warm':'WARM',
+  'new':'NOO','old':'OHLD','good':'GOOD','bad':'BAD',
+  'beautiful':'BYOO-tih-ful','ugly':'UG-lee',
+  'easy':'EE-zee','difficult / hard':'DIF-ih-kult / HARD',
+  'cheap':'CHEEP','expensive':'ik-SPEN-siv',
+  'clean':'KLEEN','dirty':'DUR-tee','quiet':'KWIY-et','noisy':'NOY-zee',
+  'happy':'HAP-ee','sad':'SAD','angry':'ANG-gree','tired':'TIYRD',
+  'hungry':'HUNG-gree','thirsty':'THURS-tee','sick':'SIK',
+  'busy':'BIZ-ee','free':'FREE','ready':'RED-ee','sure':'SHOOR',
+  // Places
+  'Thailand':'TIY-land','Bangkok':'BANG-kok',
+  'city / town':'SIT-ee / TOWN','village':'VIL-ij',
+  'country':'KUN-tree','airport':'AYR-port','bus station':'BUS STAY-shun',
+  'train station':'TRAYN STAY-shun','hotel':'hoh-TEL','restaurant':'RES-tuh-rant',
+  'bank':'BANGK','police station':'puh-LEES STAY-shun',
+  'temple':'TEM-pul','beach':'BEECH','island':'IY-lend',
+  'mountain':'MOWN-ten','river':'RIV-er',
+  // Transport
+  'car':'KAR','bus':'BUS','taxi':'TAK-see','train':'TRAYN',
+  'plane / airplane':'PLAYN / AYR-playn','boat':'BOHT','bicycle':'BIY-sik-ul',
+  'motorcycle':'MOH-ter-siy-kul','tuk-tuk':'TUK-tuk',
+  // Questions
+  'what':'WOT','who':'HOO','where':'WAYR','when':'WEN',
+  'why':'WIY','how':'HOW','how much':'HOW much','how many':'HOW men-ee',
+  'which':'WICH','whose':'HOOZ',
+  // Directions
+  'left':'LEFT','right':'RIYT','straight (ahead)':'STRAYT (uh-HED)',
+  'turn':'TURN','near / close':'NEER / KLOHS','far':'FAR',
+  'north':'NORTH','south':'SOWTH','east':'EEST','west':'WEST',
+  // Months
+  'January':'JAN-yoo-ayr-ee','February':'FEB-roo-ayr-ee',
+  'March':'MARCH','April':'AY-pril','May':'MAY','June':'JOON',
+  'July':'joo-LIY','August':'AW-gust','September':'sep-TEM-ber',
+  'October':'ok-TOH-ber','November':'noh-VEM-ber','December':'deh-SEM-ber',
+  // Animals
+  'dog':'DAWG','cat':'KAT','elephant':'EL-eh-fent','tiger':'TIY-ger',
+  'monkey':'MUNGK-ee','bird':'BURD','fish (animal)':'FISH',
+  'snake':'SNAYK','frog':'FRAWG','rabbit':'RAB-it','horse':'HORS',
+  'cow':'KOW','pig':'PIG','chicken (animal)':'CHIK-en',
+  // Nature/Weather
+  'rain':'RAYN','sun':'SUN','wind':'WIND','cloud':'KLOWD',
+  'hot':'HOT','cold':'KOHLD','cool':'KOOL','humid':'HYOO-mid',
+  'tree':'TREE','flower':'FLOW-er','river':'RIV-er','sea / ocean':'SEE / OH-shun',
+  // Shopping
+  'how much?':'HOW much?','expensive':'ik-SPEN-siv','cheap':'CHEEP',
+  'discount':'DIS-kownt','receipt':'reh-SEET','bag':'BAG',
+  'size':'SIYZ','colour / color':'KUL-er',
+  // Health
+  'doctor':'DOK-ter','nurse':'NURS','medicine':'MED-ih-sin',
+  'hospital':'HAHS-pi-tul','headache':'HED-ayk','stomach ache':'STUM-uk AYK',
+  'fever':'FEE-ver','cough':'KAWF','cold (illness)':'KOHLD',
+  'pain / hurt':'PAYN / HURT','sick':'SIK','healthy':'HEL-thee',
+  // Work / Home / Clothing
+  'work':'WURK','job':'JOB','office':'AW-fis','meeting':'MEET-ing',
+  'kitchen':'KICH-en','bedroom':'BED-room','bathroom':'BATH-room',
+  'shirt':'SHURT','trousers / pants':'TROW-zerz / PANTS',
+  'shoes':'SHOOZ','dress':'DRES','hat':'HAT',
+  // Emotions
+  'happy':'HAP-ee','sad':'SAD','angry':'ANG-gree','scared':'SKAIRD',
+  'excited':'ik-SIY-ted','bored':'BORD','surprised':'ser-PRIYZD',
+  'love':'LUV','hate':'HAYT',
+  // Patterns/Grammar
+  'not':'NOT','very':'VEH-ree','also / too':'AWL-soh / TOO',
+  'but':'BUT','because':'bih-KOZ','if':'IF','when':'WEN',
+  'already':'awl-RED-ee','still / yet':'STIL / YET',
+  'again':'uh-GEN','together':'tuh-GETH-er',
+};
+
+function getEnPhon(en) {
+  if (!en) return '';
+  // Direct lookup
+  if (EN_PHON[en]) return EN_PHON[en];
+  // Try lowercase
+  if (EN_PHON[en.toLowerCase()]) return EN_PHON[en.toLowerCase()];
+  return '';
+}
+
+// ═══════════════════════════════════════════
 //  SRS CONFIG
 // ═══════════════════════════════════════════
 const SRS_INTERVALS = [0, 1, 2, 4, 8, 16];
@@ -1461,12 +1637,13 @@ function renderCard(entry) {
       document.getElementById('card-front-sub').innerHTML =
         '<span class="no-script-note">no Thai script for this card</span>';
     }
-    // Back: English meaning (main answer), Thai phonetic below as pronunciation guide
+    // Back: English meaning (main answer), English phonetic below as pronunciation guide
     document.getElementById('thai-roman').textContent   = w.en;
     document.getElementById('thai-roman').style.color   = '#1e293b';
     document.getElementById('thai-roman').style.fontSize = '';
-    document.getElementById('thai-script').textContent  = w.th || '';
-    document.getElementById('thai-script').style.color  = '#d97706';  // amber — phonetic guide
+    const enPhon = getEnPhon(w.en);
+    document.getElementById('thai-script').textContent  = enPhon || '';
+    document.getElementById('thai-script').style.color  = enPhon ? '#6366f1' : 'transparent';  // indigo — English phonetic
   }
 
   const noteEl = document.getElementById('card-note-back');
