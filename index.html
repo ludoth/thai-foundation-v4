@@ -182,50 +182,122 @@
     /* Cat grid — 3 columns */
     .cat-grid {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px; width: 100%;
+      gap: 7px; width: 100%;
     }
     @keyframes cat-enter {
-      from { opacity: 0; transform: translateY(7px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .cat-grid.animate .cat-btn {
-      animation: cat-enter 0.28s ease-out both;
-      animation-delay: calc(var(--i, 0) * 14ms);
+      animation: cat-enter 0.32s cubic-bezier(0.22,1,0.36,1) both;
+      animation-delay: calc(var(--i, 0) * 18ms);
     }
 
     .cat-btn {
+      --cat-color: var(--accent);
+      position: relative;
       background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 11px 14px; cursor: pointer;
-      text-align: left; display: flex; flex-direction: row;
-      align-items: center; justify-content: space-between; gap: 10px;
-      transition: border-color 0.15s, background 0.15s;
+      border-radius: 11px; overflow: hidden;
+      cursor: pointer; text-align: left;
+      padding: 10px 10px 16px;
+      display: flex; flex-direction: column; gap: 3px;
+      transition: transform 0.13s, box-shadow 0.18s, background 0.18s, border-color 0.18s;
+      user-select: none;
     }
-    .cat-btn:hover { border-color: var(--cat-color, var(--accent)); }
+    /* Top color accent */
+    .cat-btn::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: color-mix(in srgb, var(--cat-color) 55%, transparent);
+      transition: background 0.18s;
+    }
+    .cat-btn:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--cat-color) 45%, var(--border));
+      box-shadow: 0 6px 22px rgba(0,0,0,0.4),
+                  0 0 0 1px color-mix(in srgb, var(--cat-color) 18%, transparent);
+    }
+    .cat-btn:hover::before { background: color-mix(in srgb, var(--cat-color) 80%, transparent); }
     .cat-btn.selected {
-      border-color: var(--cat-color, var(--accent));
-      background: color-mix(in srgb, var(--cat-color, var(--accent)) 10%, var(--bg));
+      background: color-mix(in srgb, var(--cat-color) 10%, var(--bg));
+      border-color: color-mix(in srgb, var(--cat-color) 60%, var(--border));
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35),
+                  0 0 0 1px color-mix(in srgb, var(--cat-color) 22%, transparent),
+                  inset 0 1px 0 color-mix(in srgb, var(--cat-color) 12%, transparent);
     }
-    .cat-btn-left {
-      display: flex; flex-direction: column; gap: 2px; min-width: 0;
+    .cat-btn.selected::before { background: var(--cat-color); }
+    .cat-btn.selected:hover { transform: translateY(-2px); }
+
+    /* All-mastered special state */
+    @keyframes mastered-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+      50%       { box-shadow: 0 0 14px 3px rgba(74,222,128,0.1); }
     }
+    .cat-btn.all-mastered.selected {
+      border-color: color-mix(in srgb, #4ade80 50%, var(--border));
+      animation: cat-enter 0.32s cubic-bezier(0.22,1,0.36,1) both,
+                 mastered-glow 3.5s ease-in-out 0.4s infinite;
+    }
+    .cat-btn.all-mastered::before { background: linear-gradient(90deg, #4ade80, #86efac); }
+
     .cat-emoji { font-size: 1rem; }
     .cat-name {
-      font-size: 0.82rem; font-weight: 600; color: var(--text);
+      font-size: 0.82rem; font-weight: 700; color: var(--text-muted);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.2; margin-top: 2px;
+      transition: color 0.18s;
     }
-    .cat-total { font-size: 0.67rem; color: var(--text-muted); }
-    .cat-btn.selected .cat-name  { color: var(--accent-hi); }
-    .cat-btn.selected .cat-total { color: var(--accent); }
+    .cat-btn.selected .cat-name,
+    .cat-btn:hover .cat-name { color: var(--text); }
+    .cat-btn.all-mastered.selected .cat-name { color: #86efac; }
 
-    .cat-btn-right {
-      display: flex; flex-direction: column;
-      gap: 3px; flex-shrink: 0; align-items: center;
+    /* Footer row: card count + stat numbers */
+    .cat-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 4px; margin-top: 1px;
     }
-    .cat-pill { font-size: 0.75rem; font-weight: 700; }
-    .cat-pill-green  { color: var(--green); }
-    .cat-pill-orange { color: #facc15; }
-    .cat-pill-red    { color: var(--red); }
-    .cat-pill-divider { width: 12px; height: 1px; background: var(--border); }
+    .cat-total { font-size: 0.58rem; color: var(--text-dim); font-weight: 600; }
+    .cat-stats {
+      display: flex; align-items: center; gap: 2px;
+      font-size: 0.56rem; font-weight: 800; line-height: 1;
+    }
+    .cat-stats .s-m { color: var(--green); }
+    .cat-stats .s-s { color: #facc15; }
+    .cat-stats .s-u { color: var(--text-dim); }
+    .cat-stats .dot { color: var(--text-dim); opacity: 0.5; font-size: 0.5rem; }
+
+    /* Bottom progress bar */
+    .cat-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 5px; display: flex; background: var(--surface-up);
+    }
+    .bar-m {
+      height: 100%; background: var(--green);
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .bar-s {
+      height: 100%; background: #facc15;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .bar-u { height: 100%; background: var(--surface-up); flex: 1; }
+
+    /* Mastered bar shimmer */
+    @keyframes bar-shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .cat-btn.all-mastered .bar-m {
+      background: linear-gradient(90deg, #4ade80 0%, #86efac 40%, #4ade80 100%);
+      background-size: 200% 100%;
+      animation: bar-shimmer 3s linear infinite;
+    }
+
+    /* Done badge */
+    .done-badge {
+      position: absolute; top: 7px; right: 8px;
+      font-size: 0.48rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #4ade80; opacity: 0.75; line-height: 1;
+    }
 
     .picker-row {
       display: flex; justify-content: space-between;
@@ -379,7 +451,17 @@
     .card-main { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
     .card-main.thai { color: #92400e; }
     .card-front-sub { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
-    .card-hint { font-size: 0.7rem; color: #cbd5e1; position: absolute; bottom: 14px; }
+    .card-hint { font-size: 0.7rem; color: #94a3b8; position: absolute; bottom: 14px; }
+    .card-hint-back {
+      position: absolute; bottom: 11px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.68rem; font-weight: 600; color: #64748b;
+      background: #f1f5f9; border: 1px solid #e2e8f0;
+      border-radius: 20px; padding: 3px 10px;
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .card-hint-back:hover { background: #e2e8f0; color: #475569; }
     .thai-roman { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
     .thai-script { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
     .card-note-back {
@@ -569,6 +651,29 @@
       width: 100%; height: 1px; background: var(--border);
     }
 
+    /* ── Quick-start row ── */
+    .qs-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 7px; width: 100%;
+    }
+    .qs-btn {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 11px; cursor: pointer; padding: 12px 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      font-family: inherit;
+      transition: border-color 0.15s, background 0.15s, transform 0.13s;
+    }
+    .qs-btn:hover {
+      border-color: var(--accent-bdr);
+      background: var(--accent-bg);
+      transform: translateY(-2px);
+    }
+    .qs-btn:active { transform: scale(0.96); }
+    .qs-icon { font-size: 1.1rem; line-height: 1; }
+    .qs-name { font-size: 0.82rem; font-weight: 800; color: var(--accent-hi); line-height: 1.2; margin-top: 2px; }
+    .qs-sub  { font-size: 0.56rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .qs-divider { width: 100%; height: 1px; background: var(--border); margin: 4px 0; }
+
     /* Typing mode input */
     .typing-row {
       width: 100%; max-width: 480px; display: flex; gap: 8px; margin-top: 12px;
@@ -658,6 +763,27 @@
 
   <!-- Categories -->
   <div class="picker-label" data-i18n="labelCategories">Categories</div>
+
+  <!-- Quick-start buttons — tap to start immediately, no category selection needed -->
+  <div class="qs-row">
+    <button class="qs-btn" onclick="quickStart30()">
+      <span class="qs-icon">🎲</span>
+      <span class="qs-name">Random 30</span>
+      <span class="qs-sub">cards</span>
+    </button>
+    <button class="qs-btn" onclick="quickStartCategory()">
+      <span class="qs-icon">🗂️</span>
+      <span class="qs-name">1 category</span>
+      <span class="qs-sub">random</span>
+    </button>
+    <button class="qs-btn" onclick="quickStart3Cats()">
+      <span class="qs-icon">🎯</span>
+      <span class="qs-name">3 categories</span>
+      <span class="qs-sub">random mix</span>
+    </button>
+  </div>
+  <div class="qs-divider"></div>
+
   <div class="cat-grid" id="cat-grid"></div>
 
   <div class="picker-row">
@@ -737,7 +863,10 @@
         <div class="thai-roman"      id="thai-roman"></div>
         <div class="thai-script"     id="thai-script"></div>
         <div class="card-note-back"  id="card-note-back" style="display:none"></div>
-        <div class="card-hint" data-i18n="hintBack">tap to flip back</div>
+        <button class="card-hint-back" onclick="event.stopPropagation(); toggleFlip()" data-i18n-title="hintBack">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+          <span data-i18n="hintBack">flip</span>
+        </button>
       </div>
     </div>
   </div>
@@ -870,7 +999,7 @@ const STRINGS = {
     statSeen:            'Seen',
     statMastered:        'Mastered',
     hintFront:           'tap to flip',
-    hintBack:            'tap to flip back',
+    hintBack:            'flip',
     btnSkip:             'Skip',
     btnSolution:         'Solution',
     btnAgain:            '✗ Again',
@@ -943,7 +1072,7 @@ const STRINGS = {
     statSeen:            'เห็นแล้ว',
     statMastered:        'เชี่ยวชาญ',
     hintFront:           'แตะเพื่อพลิก',
-    hintBack:            'แตะเพื่อพลิกกลับ',
+    hintBack:            'พลิกกลับ',
     btnSkip:             'ข้าม',
     btnSolution:         'เฉลย',
     btnAgain:            '✗ อีกครั้ง',
@@ -1453,11 +1582,13 @@ function renderCatGrid(animate) {
   rndBtn.className = 'cat-btn' + (selectedCats.has('random') ? ' selected' : '');
   rndBtn.style.setProperty('--cat-color', rndCfg.color);
   rndBtn.style.setProperty('--i', idx++);
-  rndBtn.innerHTML = `<div class="cat-btn-left">
+  rndBtn.innerHTML = `
     ${SHOW_CAT_EMOJI ? '<span class="cat-emoji">🎲</span>' : ''}
     <span class="cat-name">${s.catLabels.random || 'Random'}</span>
-    <span class="cat-total">${s.fullDeck}</span>
-  </div>`;
+    <div class="cat-footer">
+      <span class="cat-total">${s.fullDeck}</span>
+    </div>
+    <div class="cat-bar"><div class="bar-u" style="width:100%"></div></div>`;
   rndBtn.onclick = () => toggleCat('random');
   grid.appendChild(rndBtn);
 
@@ -1472,21 +1603,31 @@ function renderCatGrid(animate) {
     const unseen   = total - seen;
 
     const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (selectedCats.has(cat) ? ' selected' : '');
+    const allMastered = total > 0 && mastered === total;
+    btn.className = 'cat-btn'
+      + (selectedCats.has(cat) ? ' selected' : '')
+      + (allMastered ? ' all-mastered' : '');
     btn.style.setProperty('--cat-color', cfg.color);
     btn.style.setProperty('--i', idx++);
-    btn.innerHTML = `<div class="cat-btn-left">
+    const mPct = total ? (mastered / total * 100).toFixed(1) : 0;
+    const sPct = total ? (seenOnly / total * 100).toFixed(1) : 0;
+    btn.innerHTML = `
+      ${allMastered ? '<span class="done-badge">✓ Done</span>' : ''}
       ${SHOW_CAT_EMOJI ? `<span class="cat-emoji">${cfg.emoji}</span>` : ''}
       <span class="cat-name">${label}</span>
-      <span class="cat-total">${total} ${s.cardsSuffix}</span>
-    </div>
-    <div class="cat-btn-right">
-      <div class="cat-pill cat-pill-green">${mastered}</div>
-      <div class="cat-pill-divider"></div>
-      <div class="cat-pill cat-pill-orange">${seenOnly}</div>
-      <div class="cat-pill-divider"></div>
-      <div class="cat-pill cat-pill-red">${unseen}</div>
-    </div>`;
+      <div class="cat-footer">
+        <span class="cat-total">${total} ${s.cardsSuffix}</span>
+        <span class="cat-stats">
+          <span class="s-m">${mastered}</span><span class="dot">·</span>
+          <span class="s-s">${seenOnly}</span><span class="dot">·</span>
+          <span class="s-u">${unseen}</span>
+        </span>
+      </div>
+      <div class="cat-bar">
+        <div class="bar-m" style="width:${mPct}%"></div>
+        <div class="bar-s" style="width:${sPct}%"></div>
+        <div class="bar-u"></div>
+      </div>`;
     btn.onclick = () => toggleCat(cat);
     grid.appendChild(btn);
   });
@@ -1991,6 +2132,88 @@ function fireConfetti() {
     setTimeout(() => el.remove(), 2500);
   }
 }
+
+// ═══════════════════════════════════════════
+//  QUICK-START
+// ═══════════════════════════════════════════
+function beginQuickSession(q) {
+  if (!q.length) { alert(STRINGS[uiLang].noCards); return; }
+  sessionCount++;
+  localStorage.setItem('tf_session_count', sessionCount);
+  updateStreak();
+
+  queue            = q;
+  sessionCorrect   = 0;
+  sessionTotal     = 0;
+  sessionCardNum   = 0;
+  againCount       = {};
+  skippedOnce      = new Set();
+  undoSnapshot     = null;
+  sessionQueueSize = queue.length;
+
+  document.getElementById('picker-view').style.display  = 'none';
+  document.getElementById('session-done').style.display = 'none';
+  document.getElementById('session-done').classList.remove('visible');
+  document.getElementById('study-view').style.display   = '';
+  nextCard();
+}
+
+function quickStart30() {
+  const pool = FOUNDATION
+    .map((w, i) => ({ i, w, isNew: isNew(i), isRandom: true }))
+    .filter(e => !isSuspended(e.i));
+  shuffle(pool);
+  beginQuickSession(pool.slice(0, 30));
+}
+
+function quickStartCategory() {
+  const CATS = [...new Set(FOUNDATION.map(w => w.cat))];
+  const cat  = CATS[Math.floor(Math.random() * CATS.length)];
+  const pool = FOUNDATION
+    .map((w, i) => ({ i, w, isNew: isNew(i), isRandom: false }))
+    .filter(e => e.w.cat === cat && !isSuspended(e.i));
+  shuffle(pool);
+  beginQuickSession(pool);
+}
+
+function quickStart3Cats() {
+  const CATS = [...new Set(FOUNDATION.map(w => w.cat))];
+  shuffle(CATS);
+  const chosen = new Set(CATS.slice(0, 3));
+  const pool   = FOUNDATION
+    .map((w, i) => ({ i, w, isNew: isNew(i), isRandom: false }))
+    .filter(e => chosen.has(e.w.cat) && !isSuspended(e.i));
+  shuffle(pool);
+  beginQuickSession(pool);
+}
+
+// ═══════════════════════════════════════════
+//  SWIPE GESTURES (card scene)
+// ═══════════════════════════════════════════
+(function setupSwipe() {
+  const scene = document.getElementById('card-scene');
+  let tx0 = null, ty0 = null;
+
+  scene.addEventListener('touchstart', e => {
+    tx0 = e.touches[0].clientX;
+    ty0 = e.touches[0].clientY;
+  }, { passive: true });
+
+  scene.addEventListener('touchend', e => {
+    if (tx0 === null) return;
+    const dx = e.changedTouches[0].clientX - tx0;
+    const dy = e.changedTouches[0].clientY - ty0;
+    tx0 = ty0 = null;
+
+    // Horizontal swipe: at least 60px and more horizontal than vertical
+    if (Math.abs(dx) >= 60 && Math.abs(dx) >= Math.abs(dy) * 1.2) {
+      e.preventDefault(); // suppress the synthetic click event
+      if (!revealed) return;
+      dx > 0 ? answer(true) : answer(false);
+    }
+    // Small movement = tap → let the existing onclick="toggleFlip()" fire
+  }, { passive: false });
+})();
 
 // ═══════════════════════════════════════════
 //  RESET
