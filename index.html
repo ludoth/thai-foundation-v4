@@ -140,7 +140,7 @@
       overflow: hidden; position: relative;
     }
     .progress-fill-seen {
-      position: absolute; height: 100%; background: var(--surface-up);
+      position: absolute; height: 100%; background: rgba(217,119,6,0.22);
       border-radius: 99px; transition: width 0.4s ease;
     }
     .progress-fill-mastered {
@@ -171,7 +171,7 @@
     }
     .ctrl-btn:hover { border-color: var(--border-hi); }
     .ctrl-label {
-      font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.09em;
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.09em;
       color: var(--text-dim); font-weight: 700; line-height: 1;
     }
     .ctrl-value {
@@ -258,8 +258,7 @@
     }
     .cat-total { font-size: 0.58rem; color: var(--text-dim); font-weight: 600; }
     .cat-stats {
-      display: flex; align-items: center; gap: 2px;
-      font-size: 0.56rem; font-weight: 800; line-height: 1;
+      display: none;
     }
     .cat-stats .s-m { color: var(--green); }
     .cat-stats .s-s { color: #facc15; }
@@ -334,12 +333,12 @@
     .btn-start-wrap.disabled:hover .tooltip { display: block; }
     .btn-start {
       width: 100%; padding: 16px;
-      background: linear-gradient(135deg, #16a34a, #22c55e);
-      color: #fff; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hi));
+      color: #0c0a08; border: none; border-radius: 12px;
       font-size: 1rem; font-weight: 700; cursor: pointer;
       transition: opacity 0.15s, transform 0.1s;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+      box-shadow: 0 4px 16px rgba(245,158,11,0.3);
     }
     .btn-start:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-start:not(:disabled):active { transform: scale(0.98); }
@@ -433,8 +432,9 @@
       border-radius: 20px; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       background: #fefcf8;
-      border: 6px solid var(--cat-color, var(--accent));
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+      border: 2px solid color-mix(in srgb, var(--cat-color, var(--accent)) 55%, var(--border));
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2),
+                  0 0 0 1px color-mix(in srgb, var(--cat-color, var(--accent)) 18%, transparent);
       padding: 24px; gap: 6px; text-align: center;
     }
     .flip-back { transform: rotateY(180deg); }
@@ -451,7 +451,7 @@
     }
     .card-main { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
     .card-main.thai { color: #92400e; }
-    .card-front-sub { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
+    .card-front-sub { font-size: 1.8rem; color: #92400e; margin-top: 2px; }
     .card-hint { font-size: 0.7rem; color: #94a3b8; position: absolute; bottom: 14px; }
     .card-hint-back {
       position: absolute; bottom: 11px;
@@ -464,7 +464,7 @@
     }
     .card-hint-back:hover { background: #e2e8f0; color: #475569; }
     .thai-roman { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
-    .thai-script { font-size: 1.8rem; color: #92400e; position: absolute; bottom: 36px; }
+    .thai-script { font-size: 1.8rem; color: #92400e; margin-top: 2px; }
     .card-note-back {
       font-size: 0.7rem; color: #94a3b8; font-style: italic;
       border-top: 1px solid #f1f5f9; padding-top: 5px; width: 100%;
@@ -486,8 +486,13 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
-    /* SRS dots — larger */
-    .srs-dots { display: flex; gap: 5px; margin-top: 12px; }
+    /* SRS dots */
+    .srs-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+    .srs-dots { display: flex; gap: 5px; }
+    .srs-box-label {
+      font-size: 0.65rem; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap;
+    }
     .srs-dot {
       width: 10px; height: 10px; border-radius: 50%;
       background: var(--surface); border: 1.5px solid var(--border);
@@ -564,11 +569,9 @@
     }
     .btn-reveal:hover { opacity: 0.9; }
 
-    /* Session stats — contained row */
+    /* Session stats — hidden (counter in nav header is sufficient) */
     .session-stats {
-      display: flex; margin-top: 14px; width: 100%; max-width: 400px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; overflow: hidden;
+      display: none;
     }
     .session-stats > div {
       flex: 1; padding: 9px 0; text-align: center;
@@ -591,6 +594,16 @@
     #session-done.visible { display: flex; }
     #session-done h2 { font-size: 1.7rem; }
     #session-done p { color: var(--text-muted); max-width: 360px; }
+
+    .done-score-hero {
+      font-size: 3.2rem; font-weight: 800; letter-spacing: -0.03em;
+      color: var(--accent-hi); line-height: 1;
+    }
+    .done-score-sep { color: var(--text-dim); font-weight: 400; margin: 0 6px; }
+    .done-praise {
+      font-size: 0.88rem; color: var(--text-muted); font-style: italic;
+      margin-top: -6px;
+    }
 
     .done-stats {
       display: flex; gap: 16px; background: var(--surface);
@@ -769,17 +782,17 @@
   <div class="qs-row">
     <button class="qs-btn" onclick="quickStart30()">
       <span class="qs-icon">🎲</span>
-      <span class="qs-name">Random 30</span>
-      <span class="qs-sub">cards</span>
+      <span class="qs-name">Quick 30</span>
+      <span class="qs-sub">any category</span>
     </button>
     <button class="qs-btn" onclick="quickStartCategory()">
       <span class="qs-icon">🗂️</span>
-      <span class="qs-name">1 category</span>
-      <span class="qs-sub">random</span>
+      <span class="qs-name">1 Topic</span>
+      <span class="qs-sub">random pick</span>
     </button>
     <button class="qs-btn" onclick="quickStart3Cats()">
       <span class="qs-icon">🎯</span>
-      <span class="qs-name">3 categories</span>
+      <span class="qs-name">3 Topics</span>
       <span class="qs-sub">random mix</span>
     </button>
   </div>
@@ -873,7 +886,10 @@
   </div>
 
   <!-- SRS dots -->
-  <div class="srs-dots" id="srs-dots" aria-label="SRS progress"></div>
+  <div class="srs-row">
+    <div class="srs-dots" id="srs-dots" aria-label="SRS progress"></div>
+    <span class="srs-box-label" id="srs-box-label"></span>
+  </div>
 
   <!-- Audio -->
   <div class="speak-row">
@@ -929,7 +945,11 @@
 <div id="session-done">
   <div style="font-size:3.5rem;animation:done-pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275)">🎉</div>
   <h2 data-i18n="sessionDone">Session done!</h2>
-  <p id="done-msg"></p>
+  <div class="done-score-hero">
+    <span id="done-score-num">0</span><span class="done-score-sep">/</span><span id="done-score-denom">0</span>
+  </div>
+  <div class="done-praise" id="done-praise"></div>
+  <p id="done-msg" style="display:none"></p>
   <div class="done-stats">
     <div class="done-stat">
       <span class="done-stat-val"       id="done-correct">0</span>
@@ -1808,11 +1828,14 @@ function renderCard(entry) {
 
   const dotsEl = document.getElementById('srs-dots');
   dotsEl.innerHTML = '';
+  const box = getBox(current.i);
   SRS_INTERVALS.forEach((_, i) => {
     const d = document.createElement('div');
-    d.className = 'srs-dot' + (i <= getBox(current.i) ? ' filled' : '');
+    d.className = 'srs-dot' + (i <= box ? ' filled' : '');
     dotsEl.appendChild(d);
   });
+  const boxNames = ['New','Box 1','Box 2','Box 3','Box 4','Mastered'];
+  document.getElementById('srs-box-label').textContent = boxNames[box] || 'Box ' + box;
 }
 
 function updateStudyHeader() {
@@ -2090,8 +2113,21 @@ function showDone() {
   document.getElementById('done-seen').textContent     = seenCount();
   document.getElementById('done-mastered').textContent = masteredCount();
   const pct = sessionTotal ? Math.round(sessionCorrect / sessionTotal * 100) : 0;
-  document.getElementById('done-msg').textContent =
-    STRINGS[uiLang].doneMsg(sessionCorrect, sessionTotal, pct);
+
+  // Score hero
+  document.getElementById('done-score-num').textContent   = sessionCorrect;
+  document.getElementById('done-score-denom').textContent = sessionTotal;
+
+  // Contextual praise
+  const praises = [
+    { min: 90, text: 'Outstanding — near-perfect recall.' },
+    { min: 75, text: 'Great work. Keep building momentum.' },
+    { min: 60, text: 'Good effort. Review the words you missed.' },
+    { min:  0, text: 'Keep practicing — it gets easier each time.' },
+  ];
+  document.getElementById('done-praise').textContent =
+    (praises.find(p => pct >= p.min) || praises[3]).text;
+
   updateProgress();
   fireConfetti();
 }
