@@ -57,7 +57,7 @@
     body::after {
       content: '';
       position: fixed; inset: 0; z-index: 9998; pointer-events: none;
-      opacity: 0.032;
+      opacity: 0.05;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 200px 200px;
     }
@@ -449,7 +449,7 @@
       background: #fef3c7; border-radius: 4px; padding: 1px 5px;
       text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .card-main { font-size: 2.6rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
+    .card-main { font-size: clamp(1.8rem, 7vw, 2.6rem); font-weight: 800; color: #1e293b; line-height: 1.2; }
     .card-main.thai { color: #92400e; }
     .card-front-sub { font-size: 1.8rem; color: #92400e; margin-top: 2px; }
     .card-hint { font-size: 0.7rem; color: #94a3b8; position: absolute; bottom: 14px; }
@@ -547,6 +547,7 @@
     .btn-again:hover  { background: #2a1515; }
     .btn-again.flash  { animation: flash-red   0.35s ease-out forwards; }
     .btn-got-it {
+      flex: 1.4;
       background: var(--surface); color: var(--green);
       border: 1.5px solid var(--green-dim);
     }
@@ -1579,12 +1580,14 @@ document.addEventListener('click', e => {
 // ═══════════════════════════════════════════
 //  PICKER
 // ═══════════════════════════════════════════
+let pickerFirstOpen = true;
 function showPicker() {
   document.getElementById('picker-view').style.display   = '';
   document.getElementById('study-view').style.display    = 'none';
   document.getElementById('session-done').style.display  = 'none';
   document.getElementById('session-done').classList.remove('visible');
-  renderCatGrid(true);
+  renderCatGrid(pickerFirstOpen);
+  pickerFirstOpen = false;
   updateProgress();
   updateSuspendedNote();
 }
