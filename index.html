@@ -1577,22 +1577,6 @@ function renderCatGrid(animate) {
   const s = STRINGS[uiLang];
   let idx = 0;
 
-  // Random first
-  const rndCfg = CAT_CONFIG.random || { color: '#f59e0b' };
-  const rndBtn = document.createElement('button');
-  rndBtn.className = 'cat-btn' + (selectedCats.has('random') ? ' selected' : '');
-  rndBtn.style.setProperty('--cat-color', rndCfg.color);
-  rndBtn.style.setProperty('--i', idx++);
-  rndBtn.innerHTML = `
-    ${SHOW_CAT_EMOJI ? '<span class="cat-emoji">🎲</span>' : ''}
-    <span class="cat-name">${s.catLabels.random || 'Random'}</span>
-    <div class="cat-footer">
-      <span class="cat-total">${s.fullDeck}</span>
-    </div>
-    <div class="cat-bar"><div class="bar-u" style="width:100%"></div></div>`;
-  rndBtn.onclick = () => toggleCat('random');
-  grid.appendChild(rndBtn);
-
   CATS.forEach(cat => {
     const cfg      = CAT_CONFIG[cat] || { emoji:'📝', color:'#d97706', label: cat };
     const label    = s.catLabels[cat] || cfg.label;
@@ -1648,19 +1632,16 @@ function toggleCat(cat) {
 
 function toggleAll() {
   const CATS = [...new Set(FOUNDATION.map(w => w.cat))];
-  const allSelected = CATS.every(c => selectedCats.has(c)) && selectedCats.has('random');
+  const allSelected = CATS.every(c => selectedCats.has(c));
   if (allSelected) { selectedCats.clear(); }
-  else { CATS.forEach(c => selectedCats.add(c)); selectedCats.add('random'); }
+  else { CATS.forEach(c => selectedCats.add(c)); }
   renderCatGrid(false);
 }
 
 function updateWordCount() {
-  const s       = STRINGS[uiLang];
-  const count   = FOUNDATION.filter(w => selectedCats.has(w.cat)).length;
-  const hasRnd  = selectedCats.has('random');
-  const rndLabel = s.catLabels.random || 'random';
-  const display = count + (hasRnd && count ? ' + ' + rndLabel : hasRnd ? rndLabel : '');
-  document.getElementById('word-count-note').textContent = count || hasRnd ? display + ' ' + s.cardsSuffix : '';
+  const s     = STRINGS[uiLang];
+  const count = FOUNDATION.filter(w => selectedCats.has(w.cat)).length;
+  document.getElementById('word-count-note').textContent = count ? count + ' ' + s.cardsSuffix : '';
   const disabled = selectedCats.size === 0;
   document.getElementById('btn-start').disabled = disabled;
   document.getElementById('btn-start-wrap').classList.toggle('disabled', disabled);
@@ -1712,14 +1693,6 @@ function buildQueue() {
     included.add(i);
     (isNew(i) ? dueNew : dueReview).push({ i, w, isNew: isNew(i), isRandom: false });
   });
-
-  if (selectedCats.has('random')) {
-    const pool = FOUNDATION
-      .map((w, i) => ({ i, w, isNew: isNew(i), isRandom: true }))
-      .filter(e => !included.has(e.i) && !isSuspended(e.i) && isDue(e.i));
-    shuffle(pool);
-    pool.forEach(e => (e.isNew ? dueNew : dueReview).push(e));
-  }
 
   shuffle(dueReview);
   shuffle(dueNew);
